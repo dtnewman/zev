@@ -32,8 +32,8 @@ def get_gemini_client():
     api_key = os.getenv("GEMINI_API_KEY", default="").strip()
     if not api_key:
         raise ValueError("GEMINI_API_KEY must be set. Try running `zev --setup`.")
-    genai.configure(api_key=api_key)
-    return genai
+    client = genai.Client(api_key=api_key)
+    return client
 
 def get_client():
     """Returns the appropriate client based on the configured provider."""
