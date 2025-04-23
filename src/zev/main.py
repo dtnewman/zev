@@ -8,7 +8,7 @@ from rich import print as rprint
 from rich.console import Console
 import sys
 
-from zev.constants import DEFAULT_BASE_URL, DEFAULT_MODEL
+from zev.constants import DEFAULT_OPENAI_BASE_URL, DEFAULT_OPENAI_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_PROVIDER
 from zev.llm import get_options
 from zev.utils import get_env_context, get_input_string
 
@@ -23,22 +23,40 @@ class DotEnvField:
 
 DOT_ENV_FIELDS = [
     DotEnvField(
+        name="LLM_PROVIDER",
+        prompt="Enter your LLM provider (openai or gemini)",
+        required=True,
+        default=DEFAULT_PROVIDER,
+    ),
+    DotEnvField(
         name="OPENAI_API_KEY",
-        prompt="Enter your OpenAI API key",
+        prompt="Enter your OpenAI API key (required if using OpenAI provider)",
         required=False,
         default=os.getenv("OPENAI_API_KEY", ""),
     ),
     DotEnvField(
         name="OPENAI_BASE_URL",
-        prompt="Enter your OpenAI base URL (for example, to use Ollama, enter http://localhost:11434/v1. If you don't know what this is, just press enter)",
-        required=True,
-        default=DEFAULT_BASE_URL,
+        prompt="Enter your OpenAI base URL (for example, to use Ollama, enter http://localhost:11434/v1. Required if using OpenAI provider)",
+        required=False,
+        default=DEFAULT_OPENAI_BASE_URL,
     ),
     DotEnvField(
         name="OPENAI_MODEL",
-        prompt="Enter your OpenAI model",
-        required=True,
-        default=DEFAULT_MODEL,
+        prompt="Enter your OpenAI model (required if using OpenAI provider)",
+        required=False,
+        default=DEFAULT_OPENAI_MODEL,
+    ),
+    DotEnvField(
+        name="GEMINI_API_KEY",
+        prompt="Enter your Gemini API key (required if using Gemini provider)",
+        required=False,
+        default=os.getenv("GEMINI_API_KEY", ""),
+    ),
+    DotEnvField(
+        name="GEMINI_MODEL",
+        prompt="Enter your Gemini model (required if using Gemini provider)",
+        required=False,
+        default=DEFAULT_GEMINI_MODEL,
     ),
 ]
 
