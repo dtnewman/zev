@@ -8,7 +8,7 @@ from rich import print as rprint
 from rich.console import Console
 import sys
 
-from zev.constants import DEFAULT_OPENAI_BASE_URL, DEFAULT_OPENAI_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_PROVIDER
+from zev.constants import DEFAULT_OPENAI_BASE_URL, DEFAULT_OPENAI_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_PROVIDER, LLMProvider
 from zev.llm import get_options
 from zev.utils import get_env_context, get_input_string
 
@@ -63,12 +63,42 @@ DOT_ENV_FIELDS = [
 
 def setup():
     new_file = ""
+    
+    # First, get the LLM provider
+    llm_provider_field = next(field for field in DOT_ENV_FIELDS if field.name == "LLM_PROVIDER")
+    provider = get_input_string(
+        llm_provider_field.name, 
+        llm_provider_field.prompt, 
+        llm_provider_field.default, 
+        llm_provider_field.required
+    ).lower()
+    new_file += f"{llm_provider_field.name}={provider}\n"
+    
+    # Then, show only the relevant fields based on the selected provider
     for field in DOT_ENV_FIELDS:
+        # Skip the provider field as we've already handled it
+        if field.name == "LLM_PROVIDER":
+            continue
+            
+        # Skip OpenAI fields if Gemini is selected
+        if provider == LLMProvider.GEMINI and field.name.startswith("OPENAI_"):
+            new_file += f"{field.name}=\n"  # Add empty value to maintain the field
+            continue
+            
+        # Skip Gemini fields if OpenAI is selected
+        if provider == LLMProvider.OPENAI and field.name.startswith("GEMINI_"):
+            new_file += f"{field.name}=\n"  # Add empty value to maintain the field
+            continue
+            
+        # For the selected provider, prompt for the field value
         new_value = get_input_string(field.name, field.prompt, field.default, field.required)
         new_file += f"{field.name}={new_value}\n"
 
+    # Create the app data directory if it doesn't exist
     app_data_dir = platformdirs.user_data_dir("zev")
     os.makedirs(app_data_dir, exist_ok=True)
+
+    # Write the new .env file
     with open(os.path.join(app_data_dir, ".env"), "w") as f:
         f.write(new_file)
 
