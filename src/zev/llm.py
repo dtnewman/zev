@@ -5,7 +5,7 @@ from typing import Optional, Literal
 from google import genai
 import json
 
-from zev.constants import DEFAULT_MODEL, DEFAULT_PROVIDER, DEFAULT_OPENAI_MODEL, DEFAULT_GEMINI_MODEL
+from zev.constants import DEFAULT_MODEL, DEFAULT_PROVIDER, DEFAULT_OPENAI_MODEL, DEFAULT_GEMINI_MODEL, PROMPT
 
 
 class Command(BaseModel):
@@ -17,39 +17,6 @@ class OptionsResponse(BaseModel):
     commands: list[Command]
     is_valid: bool
     explanation_if_not_valid: Optional[str] = None
-
-
-PROMPT = """
-You are a helpful assistant that helps users remember commands for the terminal. You 
-will return a JSON object with a list of at most three options.
-
-The options should be related to the prompt that the user provides (the prompt might
-either be desciptive or in the form of a question).
-
-The options should be in the form of a command that can be run in a bash terminal.
-
-If the user prompt is not clear, return an empty list and set is_valid to false, and
-provide an explanation of why it is not clear in the explanation_if_not_valid field.
-
-Otherwise, set is_valid to true, leave explanation_if_not_valid empty, and provide the 
-commands in the commands field (remember, up to 3 options, and they all must be commands
-that can be run in a bash terminal without changing anything). Each command should have
-a short explanation of what it does.
-
-Here is some context about the user's environment:
-
-============== 
-
-{context}
-
-============== 
-
-Here is the users prompt:
-
-============== 
-
-{prompt}
-"""
 
 
 def get_openai_client():
@@ -76,7 +43,6 @@ def get_client():
         return get_gemini_client()
     else:
         raise ValueError(f"Unsupported provider: {provider}. Use 'openai' or 'gemini'.")
-
 
 def get_options(prompt: str, context: str) -> OptionsResponse | None:
     provider = os.getenv("LLM_PROVIDER", default=DEFAULT_PROVIDER).strip().lower()
@@ -123,7 +89,7 @@ def get_options(prompt: str, context: str) -> OptionsResponse | None:
                     return OptionsResponse.parse_obj(response_json)
                 except json.JSONDecodeError as json_err:
                     print(f"Error: Failed to parse JSON response from Gemini API: {json_err}")
-                    print(f"Raw response: {response_text[:100]}...") # Print first 100 chars for debugging
+                    print(f"Raw response: {response_text[:100]}...") 
                     return None
 
             except Exception as gemini_err:
