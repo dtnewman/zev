@@ -1,17 +1,23 @@
+# Enum for LLM providers
+class LLMProvider:
+    OPENAI = "openai"
+    GEMINI = "gemini"
+
 # LLM Provider options
-DEFAULT_PROVIDER = "openai"  # Options: "openai", "gemini"
+DEFAULT_PROVIDER = LLMProvider.OPENAI
 
 # OpenAI defaults
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1"
 
 # Gemini defaults
-DEFAULT_GEMINI_MODEL = "gemini-1.5-pro"
+DEFAULT_GEMINI_MODEL = "gemini-2.0-flash"
 
 # Backwards compatibility
 DEFAULT_MODEL = DEFAULT_OPENAI_MODEL
 DEFAULT_BASE_URL = DEFAULT_OPENAI_BASE_URL
 
+# Prompt for the LLM
 PROMPT = """
 You are a helpful assistant that helps users remember commands for the terminal. You 
 will return a JSON object with a list of at most three options.
