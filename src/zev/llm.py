@@ -68,30 +68,25 @@ def get_gemini_response(client, prompt: str) -> OptionsResponse | None:
     if not model:
         raise ValueError("GEMINI_MODEL must be set. Try running `zev --setup`.")
     
+    response = client.models.generate_content(
+        model=model,
+        contents=prompt,
+        config={
+            'response_mime_type': 'application/json',
+            'response_schema': OptionsResponse,
+        },
+    )
+    
+    if not response.text:
+        print("Error: Received empty response from Gemini API.")
+        return None
+                        
     try:
-        response = client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config={
-                'response_mime_type': 'application/json',
-                'response_schema': OptionsResponse,
-            },
-        )
-        
-        if not response.text:
-            print("Error: Received empty response from Gemini API.")
-            return None
-                            
-        try:
-            response_json = json.loads(response.text)
-            return OptionsResponse.parse_obj(response_json)
-        except json.JSONDecodeError as json_err:
-            print(f"Error: Failed to parse JSON response from Gemini API: {json_err}")
-            print(f"Raw response: {response.text[:100]}...") 
-            return None
-
-    except Exception as gemini_err:
-        print(f"Error: Gemini API request failed: {str(gemini_err)}")
+        response_json = json.loads(response.text)
+        return OptionsResponse.parse_obj(response_json)
+    except json.JSONDecodeError as json_err:
+        print(f"Error: Failed to parse JSON response from Gemini API: {json_err}")
+        print(f"Raw response: {response.text[:100]}...") 
         return None
 
 def get_options(prompt: str, context: str) -> OptionsResponse | None:
@@ -110,9 +105,12 @@ def get_options(prompt: str, context: str) -> OptionsResponse | None:
             raise ValueError(f"Provider {provider} is invalid. Use 'openai' or 'gemini'.")
                 
     except openai.AuthenticationError:
-        print(f"Error: There was an error with your {provider.upper()} API key. You can change it by running `zev --setup`.")
+        print(f"There was an error with your {provider.upper()} API key. You can change it by running `zev --setup`.")
         return None
 
     except Exception as e:
-        print(f"Error: An unexpected error occurred: {str(e)}")
+        if e.code == 400:
+            print(f"GEMINI API issue: {str(e.message)} You can change it by running `zev --setup`.")  
+        else:
+            print(f"An error occurred: {str(e)}. Consider updating LLM configuration by running `zev --setup`.") 
         return None
