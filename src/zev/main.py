@@ -9,8 +9,13 @@ from rich.console import Console
 import sys
 
 from zev.constants import OPENAI_BASE_URL, DEFAULT_MODEL
-from zev.llm import get_options
-from zev.utils import get_env_context, get_input_string
+from zev.llm import get_options, OptionsResponse
+from zev.utils import (
+    get_env_context,
+    get_input_string,
+    save_last_options,
+    get_last_options
+)
 
 
 @dataclass
@@ -58,8 +63,17 @@ def setup():
 def show_options(words: str):
     context = get_env_context()
     console = Console()
-    with console.status("[bold blue]Thinking...", spinner="dots"):
-        response = get_options(prompt=words, context=context)
+    
+    if words.lower() == "last":
+        last_commands = get_last_options()
+        if last_commands is None:
+            print("No previous options available")
+            return
+        response = OptionsResponse(commands=last_commands, is_valid=True)
+    else:
+        with console.status("[bold blue]Thinking...", spinner="dots"):
+            response = get_options(prompt=words, context=context)
+    
     if response is None:
         return
 
@@ -71,6 +85,7 @@ def show_options(words: str):
         print("No commands available")
         return
 
+    save_last_options(response.commands)
     options = [questionary.Choice(cmd.command, description=cmd.short_explanation) for cmd in response.commands]
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())
