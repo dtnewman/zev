@@ -12,7 +12,7 @@ from zev.config.setup import run_setup
 from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, get_input_string
-
+from zev.history import history
 
 @dataclass
 class DotEnvField:
@@ -48,32 +48,19 @@ def setup():
     run_setup()
 
 
-def show_options(words: str):
-    context = get_env_context()
-    console = Console()
-    with console.status("[bold blue]Thinking...", spinner="dots"):
-        inference_provider = get_inference_provider()
-        response = inference_provider.get_options(prompt=words, context=context)
-    if response is None:
-        return
-
-    if not response.is_valid:
-        print(response.explanation_if_not_valid)
-        return
-
-    if not response.commands:
+def display_command_options(commands, title="Select command:"):
+    """Common function to display command options and handle selection."""
+    if not commands:
         print("No commands available")
         return
 
-
-    save_last_options(response.commands)
-    options = [questionary.Choice(cmd.command, description=cmd.short_explanation) for cmd in response.commands]
+    options = [questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd) for cmd in commands]
 
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())
 
     selected = questionary.select(
-        "Select command:",
+        title,
         choices=options,
         use_shortcuts=True,
         style=questionary.Style(
@@ -91,6 +78,67 @@ def show_options(words: str):
         if selected.dangerous_explanation:
             rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
         rprint("[green]✓[/green] Copied to clipboard")
+
+
+def show_last_commands():
+    response_history = history.get_history()
+    if not response_history:
+        print("No command history found")
+        return
+
+    query_options = [questionary.Choice(word, value=word) for word in response_history.keys()]
+
+    if not query_options:
+        print("No command history found")
+        return
+
+    query_options.append(questionary.Choice("Cancel"))
+    query_options.append(questionary.Separator())
+
+    selected_query = questionary.select(
+        "Select from history:",
+        choices=query_options,
+        use_shortcuts=True,
+        style=questionary.Style([
+            ("answer", "fg:#61afef"),
+            ("question", "bold"),
+            ("instruction", "fg:#98c379"),
+        ])
+    ).ask()
+
+    if selected_query == "Cancel":
+        return
+
+    display_command_options(
+        response_history[selected_query].commands,
+        f"Commands for '{selected_query}':"
+    )
+
+
+def show_options(words: str):
+    context = get_env_context()
+    console = Console()
+    
+    if words.lower() == "last":
+        show_last_commands()
+        return
+            
+    with console.status("[bold blue]Thinking...", spinner="dots"):
+        inference_provider = get_inference_provider()
+        response = inference_provider.get_options(prompt=words, context=context)
+        history.save_options(words, response)
+    if response is None:
+        return
+
+    if not response.is_valid:
+        print(response.explanation_if_not_valid)
+        return
+
+    if not response.commands:
+        print("No commands available")
+        return
+
+    display_command_options(response.commands, "Select command:")
 
 
 def run_no_prompt():
