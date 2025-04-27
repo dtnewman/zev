@@ -1,21 +1,17 @@
 from dataclasses import dataclass
 import dotenv
 import os
-import platformdirs
+from pathlib import Path
 import pyperclip
 import questionary
 from rich import print as rprint
 from rich.console import Console
 import sys
 
-from zev.constants import OPENAI_BASE_URL, DEFAULT_MODEL
-from zev.llm import get_options, OptionsResponse
-from zev.utils import (
-    get_env_context,
-    get_input_string,
-    save_last_options,
-    get_last_options
-)
+from zev.config.setup import run_setup
+from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME
+from zev.llms.llm import get_inference_provider
+from zev.utils import get_env_context, get_input_string
 
 
 @dataclass
@@ -43,37 +39,21 @@ DOT_ENV_FIELDS = [
         name="OPENAI_MODEL",
         prompt="Enter your OpenAI model",
         required=True,
-        default=DEFAULT_MODEL,
+        default=OPENAI_DEFAULT_MODEL,
     ),
 ]
 
 
 def setup():
-    new_file = ""
-    for field in DOT_ENV_FIELDS:
-        new_value = get_input_string(field.name, field.prompt, field.default, field.required)
-        new_file += f"{field.name}={new_value}\n"
-
-    app_data_dir = platformdirs.user_data_dir("zev")
-    os.makedirs(app_data_dir, exist_ok=True)
-    with open(os.path.join(app_data_dir, ".env"), "w") as f:
-        f.write(new_file)
+    run_setup()
 
 
 def show_options(words: str):
     context = get_env_context()
     console = Console()
-    
-    if words.lower() == "last":
-        last_commands = get_last_options()
-        if last_commands is None:
-            print("No previous options available")
-            return
-        response = OptionsResponse(commands=last_commands, is_valid=True)
-    else:
-        with console.status("[bold blue]Thinking...", spinner="dots"):
-            response = get_options(prompt=words, context=context)
-    
+    with console.status("[bold blue]Thinking...", spinner="dots"):
+        inference_provider = get_inference_provider()
+        response = inference_provider.get_options(prompt=words, context=context)
     if response is None:
         return
 
@@ -85,8 +65,10 @@ def show_options(words: str):
         print("No commands available")
         return
 
+
     save_last_options(response.commands)
     options = [questionary.Choice(cmd.command, description=cmd.short_explanation) for cmd in response.commands]
+
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())
 
@@ -104,8 +86,11 @@ def show_options(words: str):
     ).ask()
 
     if selected != "Cancel":
-        pyperclip.copy(selected)
-        rprint("\n[green]✓[/green] Copied to clipboard")
+        pyperclip.copy(selected.command)
+        print("")
+        if selected.dangerous_explanation:
+            rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
+        rprint("[green]✓[/green] Copied to clipboard")
 
 
 def run_no_prompt():
@@ -114,26 +99,26 @@ def run_no_prompt():
 
 
 def app():
-    # check if .env exists or if setting up again
-    app_data_dir = platformdirs.user_data_dir("zev")
+    # check if .zevrc exists or if setting up again
+    config_path = Path.home() / CONFIG_FILE_NAME
     args = [arg.strip() for arg in sys.argv[1:]]
-    
-    if not os.path.exists(os.path.join(app_data_dir, ".env")):
-        setup()
+
+    if not config_path.exists():
+        run_setup()
         print("Setup complete...\n")
         if len(args) == 1 and args[0] == "--setup":
             return
     elif len(args) == 1 and args[0] == "--setup":
-        dotenv.load_dotenv(os.path.join(app_data_dir, ".env"), override=True)
-        setup()
+        dotenv.load_dotenv(config_path, override=True)
+        run_setup()
         print("Setup complete...\n")
         return
     elif len(args) == 1 and args[0] == "--version":
-        print(f"zev version: 0.3.2")
+        print(f"zev version: 0.5.3")
         return
 
     # important: make sure this is loaded before actually running the app (in regular or interactive mode)
-    dotenv.load_dotenv(os.path.join(app_data_dir, ".env"), override=True)
+    dotenv.load_dotenv(config_path, override=True)
 
     if not args:
         run_no_prompt()

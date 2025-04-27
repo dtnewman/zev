@@ -21,7 +21,7 @@ def get_input_string(
     # ANSI escape code for green color (#98c379)
     green_color = "\033[38;2;152;195;121m"
     reset_color = "\033[0m"
-    
+
     value = input(f"{green_color}{prompt}{reset_color}: ") or default
     if required and not value:
         print(f"{field_name} is required, please try again")
