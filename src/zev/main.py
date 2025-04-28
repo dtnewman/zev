@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 
 from zev.config.setup import run_setup
-from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME, EDIT_PROMPT
+from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, get_input_string
 from zev.history import history
