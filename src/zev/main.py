@@ -14,7 +14,7 @@ def setup():
     run_setup()
 
 
-def show_last_commands():
+def show_history():
     response_history = history.get_history()
     if not response_history:
         print("No command history found")
@@ -37,7 +37,7 @@ def show_options(words: str):
     context = get_env_context()
     
     if words.lower() == "last":
-        show_last_commands()
+        show_history()
         return
     
     def generate_response():
