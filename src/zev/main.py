@@ -46,62 +46,6 @@ def setup():
     run_setup()
 
 
-# def edit_prompt():
-#     response_history = history.get_history()
-#     if not response_history:
-#         print("No command history found")
-#         return
-
-#     most_recent_query = next(iter(response_history.keys()))
-#     previous_response = response_history[most_recent_query]
-
-#     previous_response_str = "\n".join(
-#         f"Command: {cmd.command}\n"
-#         f"Explanation: {cmd.short_explanation}\n"
-#         f"Dangerous: {cmd.is_dangerous}\n"
-#         f"Dangerous Explanation: {cmd.dangerous_explanation or 'N/A'}"
-#         for cmd in previous_response.commands
-#     )
-
-#     user_feedback = cli.get_text_input(
-#         "What would you like to change about the previous response?"
-#     )
-
-#     if not user_feedback:
-#         return
-
-#     context = get_env_context()
-    
-#     def generate_response():
-#         inference_provider = get_inference_provider()
-#         response = inference_provider.get_options(
-#             prompt=EDIT_PROMPT.format(
-#                 context=context,
-#                 original_prompt=most_recent_query,
-#                 previous_response=previous_response_str,
-#                 user_feedback=user_feedback
-#             ),
-#             context=context
-#         )
-#         history.save_options(most_recent_query, response)
-#         return response
-    
-#     response = cli.display_thinking_status(generate_response)
-
-#     if response is None:
-#         return
-
-#     if not response.is_valid:
-#         print(response.explanation_if_not_valid)
-#         return
-
-#     if not response.commands:
-#         print("No commands available")
-#         return
-
-#     display_command_options(response.commands, "Select command:")
-
-
 def show_last_commands():
     response_history = history.get_history()
     if not response_history:
@@ -148,10 +92,6 @@ def show_options(words: str):
         return
 
     selected = cli.display_command_options(response.commands, "Select command:")
-
-    # if selected == "Edit prompt":
-    #     edit_prompt()
-    #     return
 
     if selected != "Cancel" and selected is not None:
         cli.copy_to_clipboard(selected)

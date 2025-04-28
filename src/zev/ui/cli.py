@@ -41,7 +41,6 @@ class CLI:
             ) for cmd in commands
         ]
         
-        # options.append("Edit prompt")
         options.append(questionary.Choice("Cancel"))
         options.append(questionary.Separator())
         
