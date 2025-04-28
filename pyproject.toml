@@ -1,9 +1,10 @@
 [project]
 name = "zev"
-version = "0.5.3"
+version = "0.6.2"
 description = "Lookup CLI commands easily"
 readme = "README.md"
 dependencies = [
+    "google-genai>=1.11.0",
     "openai>=1.72.0",
     "pydantic>=2.10.6",
     "pyperclip>=1.9.0",

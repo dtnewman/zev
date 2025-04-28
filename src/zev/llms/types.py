@@ -8,6 +8,7 @@ class Command(BaseModel):
     is_dangerous: bool
     dangerous_explanation: Optional[str] = None
 
+
 class OptionsResponse(BaseModel):
     commands: list[Command]
     is_valid: bool

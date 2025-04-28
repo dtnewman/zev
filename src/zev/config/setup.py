@@ -9,9 +9,10 @@ from zev.config.types import (
     SetupQuestionText,
     SetupQuestionSelectOption,
 )
-
+from zev.constants import LLMProviders
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
+from zev.llms.gemini.setup import questions as gemini_questions
 
 setup_questions = [
     SetupQuestionSelect(
@@ -19,14 +20,19 @@ setup_questions = [
         prompt="Pick your LLM provider:",
         options=[
             SetupQuestionSelectOption(
-                value="openai",
+                value=LLMProviders.OPENAI,
                 label="OpenAI",
                 follow_up_questions=openai_questions,
             ),
             SetupQuestionSelectOption(
-                value="ollama",
+                value=LLMProviders.OLLAMA,
                 label="Ollama",
                 follow_up_questions=ollama_questions,
+            ),
+            SetupQuestionSelectOption(
+                value=LLMProviders.GEMINI,
+                label="Gemini",
+                follow_up_questions=gemini_questions,
             ),
         ],
     )
