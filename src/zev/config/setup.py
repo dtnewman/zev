@@ -2,7 +2,6 @@ from dotenv import dotenv_values
 from pathlib import Path
 import questionary
 from typing import Dict
-from zev.constants import LLMProviders
 
 from zev.config.types import (
     SetupQuestion,
@@ -10,7 +9,7 @@ from zev.config.types import (
     SetupQuestionText,
     SetupQuestionSelectOption,
 )
-
+from zev.constants import LLMProviders
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
 from zev.llms.gemini.setup import questions as gemini_questions
