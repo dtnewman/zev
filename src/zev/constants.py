@@ -3,15 +3,11 @@ class LLMProviders:
     OLLAMA = "ollama"
     GEMINI = "gemini"
 
-
 DEFAULT_PROVIDER = LLMProviders.OPENAI
 
 # Default model names for each provider
 OPENAI_DEFAULT_MODEL = "gpt-4o-mini"
 GEMINI_DEFAULT_MODEL = "gemini-2.0-flash"
-
-# Generic default model (fallback)
-DEFAULT_MODEL = OPENAI_DEFAULT_MODEL
 
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 CONFIG_FILE_NAME = ".zevrc"
