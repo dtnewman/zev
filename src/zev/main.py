@@ -9,7 +9,7 @@ from rich.console import Console
 import sys
 
 from zev.config.setup import run_setup
-from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME
+from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, CONFIG_FILE_NAME, DEFAULT_PROVIDER, GEMINI_DEFAULT_MODEL
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, get_input_string
 
@@ -38,14 +38,26 @@ DOT_ENV_FIELDS = [
     DotEnvField(
         name="OPENAI_BASE_URL",
         prompt="Enter your OpenAI base URL (for example, to use Ollama, enter http://localhost:11434/v1. If you don't know what this is, just press enter)",
-        required=True,
+        required=False,
         default=OPENAI_BASE_URL,
     ),
     DotEnvField(
         name="OPENAI_MODEL",
         prompt="Enter your OpenAI model",
-        required=True,
+        required=False,
         default=OPENAI_DEFAULT_MODEL,
+    ),
+    DotEnvField(
+        name="GEMINI_API_KEY",
+        prompt="Enter your Gemini API key (required if using Gemini provider)",
+        required=False,
+        default=os.getenv("GEMINI_API_KEY", ""),
+    ),
+    DotEnvField(
+        name="GEMINI_MODEL",
+        prompt="Enter your Gemini model (required if using Gemini provider)",
+        required=False,
+        default=GEMINI_DEFAULT_MODEL,
     ),
 ]
 

@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-
 class Command(BaseModel):
     command: str
     short_explanation: str

@@ -29,5 +29,14 @@ class Config:
     def ollama_model(self):
         return self.vals.get("OLLAMA_MODEL")
 
+    # Gemini
+    @property
+    def gemini_model(self):
+        return self.vals.get("GEMINI_MODEL")
+
+    @property
+    def gemini_api_key(self):
+        return self.vals.get("GEMINI_API_KEY")
+
 
 config = Config()

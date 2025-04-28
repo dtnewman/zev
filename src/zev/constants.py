@@ -1,7 +1,10 @@
+DEFAULT_PROVIDER = "openai"
+
+GEMINI_DEFAULT_MODEL = "gemini-2.0-flash"
 OPENAI_DEFAULT_MODEL = "gpt-4o-mini"
+
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 CONFIG_FILE_NAME = ".zevrc"
-
 
 PROMPT = """
 You are a helpful assistant that helps users remember commands for the terminal. You 

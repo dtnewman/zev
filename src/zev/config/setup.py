@@ -12,6 +12,7 @@ from zev.config.types import (
 
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
+from zev.llms.gemini.setup import questions as gemini_questions
 
 setup_questions = [
     SetupQuestionSelect(
@@ -27,6 +28,11 @@ setup_questions = [
                 value="ollama",
                 label="Ollama",
                 follow_up_questions=ollama_questions,
+            ),
+            SetupQuestionSelectOption(
+                value="gemini",
+                label="Gemini",
+                follow_up_questions=gemini_questions,
             ),
         ],
     )
