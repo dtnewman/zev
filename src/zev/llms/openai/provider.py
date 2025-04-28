@@ -10,6 +10,7 @@ class OpenAIProvider(InferenceProvider):
     def __init__(self):
         if not config.openai_api_key:
             raise ValueError("OPENAI_API_KEY must be set. Try running `zev --setup`.")
+            
         self.client = OpenAI(base_url=OPENAI_BASE_URL, api_key=config.openai_api_key)
         self.model = config.openai_model or OPENAI_DEFAULT_MODEL
 
