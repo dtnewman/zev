@@ -1,6 +1,6 @@
 [project]
 name = "zev"
-version = "0.3.1"
+version = "0.5.3"
 description = "Lookup CLI commands easily"
 readme = "README.md"
 dependencies = [
@@ -28,9 +28,9 @@ dev = [
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = ["zev"]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["zev*"]
 
 [tool.ruff]
 line-length = 120
