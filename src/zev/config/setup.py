@@ -2,7 +2,7 @@ from dotenv import dotenv_values
 from pathlib import Path
 import questionary
 from typing import Dict
-from constants import LLMProviders
+from zev.constants import LLMProviders
 
 from zev.config.types import (
     SetupQuestion,
