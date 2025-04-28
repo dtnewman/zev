@@ -20,7 +20,7 @@ class GeminiProvider(InferenceProvider):
             assembled_prompt = PROMPT.format(prompt=prompt, context=context)
             response = self.client.models.generate_content(
                 model=self.model,
-                contents=prompt,
+                contents=assembled_prompt,
                 config={
                     'response_mime_type': 'application/json',
                     'response_schema': OptionsResponse,
