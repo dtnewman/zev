@@ -6,7 +6,7 @@ from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, get_input_string
-from zev.history import history
+from zev.history.history import history
 from zev.ui.cli import cli
 
 
