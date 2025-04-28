@@ -2,6 +2,7 @@ from dotenv import dotenv_values
 from pathlib import Path
 import questionary
 from typing import Dict
+from constants import LLMProviders
 
 from zev.config.types import (
     SetupQuestion,
@@ -20,17 +21,17 @@ setup_questions = [
         prompt="Pick your LLM provider:",
         options=[
             SetupQuestionSelectOption(
-                value="openai",
+                value=LLMProviders.OPENAI,
                 label="OpenAI",
                 follow_up_questions=openai_questions,
             ),
             SetupQuestionSelectOption(
-                value="ollama",
+                value=LLMProviders.OLLAMA,
                 label="Ollama",
                 follow_up_questions=ollama_questions,
             ),
             SetupQuestionSelectOption(
-                value="gemini",
+                value=LLMProviders.GEMINI,
                 label="Gemini",
                 follow_up_questions=gemini_questions,
             ),
