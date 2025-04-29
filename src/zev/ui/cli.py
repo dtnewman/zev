@@ -21,13 +21,23 @@ class CLI:
             prompt_text,
             style=self.style
         ).ask()
+
+    def get_input_with_hint(self, prompt_text, hint_text=""):
+        green = "\033[38;2;152;195;121m"  
+        gray = "\033[38;2;100;100;100m"   
+        reset = "\033[0m"
+
+        print(f"{green}{prompt_text}{reset} {gray}{hint_text}{reset}", end="")
+        user_input = input(" ")
+
+        return user_input
     
     def display_thinking_status(self, callback):
         """Display a thinking status while executing a callback"""
         with self.console.status("[bold blue]Thinking...", spinner="dots"):
             return callback()
     
-    def display_command_options(self, commands, title="Select command:"):
+    def display_command_options(self, commands, title="Select command:", history=False):
         """Display command options and handle selection"""
         if not commands:
             print("No commands available")
@@ -41,6 +51,9 @@ class CLI:
             ) for cmd in commands
         ]
         
+        if history:
+            options.append(questionary.Choice("Back", value="_back"))
+            
         options.append(questionary.Choice("Cancel"))
         options.append(questionary.Separator())
         
