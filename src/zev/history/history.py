@@ -20,7 +20,7 @@ class History:
             f.write("\n")
         self._enforce_limit()
 
-    def get_history(self) -> dict[str, HistoryEntry]:
+    def get_history(self) -> list[HistoryEntry]:
         with open(self.path, "r", encoding=self.encoding) as f:
             entries = [
                 HistoryEntry.model_validate_json(line)
@@ -31,7 +31,7 @@ class History:
         if not entries:
             return None
 
-        return { entry.query: entry for entry in reversed(entries) }
+        return list(reversed(entries))
     
     def _enforce_limit(self) -> None:
         with open(self.path, "r+", encoding=self.encoding) as f:
@@ -41,5 +41,6 @@ class History:
             f.seek(0)
             f.writelines(lines[-self.max_entries :])
             f.truncate()
+
 
 history = History()

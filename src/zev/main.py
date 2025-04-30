@@ -86,8 +86,8 @@ def display_history_options(history_entries, show_limit=5):
     ])
         
     query_options = [
-        questionary.Choice(query, value=query) 
-        for query in list(history_entries.keys())[:show_limit]
+        questionary.Choice(entry.query, value=entry) 
+        for entry in history_entries[:show_limit]
     ]
     
     if len(history_entries) > show_limit: 
@@ -107,8 +107,8 @@ def display_history_options(history_entries, show_limit=5):
     
     if selected == "show_more":
         all_options = [
-            questionary.Choice(query, value=query) 
-            for query in history_entries.keys()
+            questionary.Choice(entry.query, value=entry) 
+            for entry in history_entries
         ]
         all_options.append(questionary.Separator())
         all_options.append(questionary.Choice("Cancel"))
@@ -129,12 +129,12 @@ def show_history():
         print("No command history found")
         return
     
-    selected_query = display_history_options(history_entries)
+    selected_entry = display_history_options(history_entries)
     
-    if selected_query in (None, "Cancel"):
+    if selected_entry in (None, "Cancel"):
         return
     
-    commands = history_entries[selected_query].response.commands
+    commands = selected_entry.response.commands
 
     if not commands:
         print("No commands available")
@@ -158,7 +158,7 @@ def show_history():
     options.append(questionary.Separator())
     
     selected = questionary.select(
-        f"Commands for '{selected_query}'",
+        f"Commands for '{selected_entry.query}'",
         choices=options,
         use_shortcuts=True,
         style=style,

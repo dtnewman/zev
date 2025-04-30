@@ -18,3 +18,4 @@ class HistoryEntry(BaseModel):
     query: str
     response: OptionsResponse
     
+    
