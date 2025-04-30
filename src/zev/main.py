@@ -1,49 +1,31 @@
 import dotenv
 from pathlib import Path
 import sys
+import questionary
+from rich import print as rprint
+from rich.console import Console
+import pyperclip
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME, VERSION
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, show_help
 from zev.history.history import history
-from zev.ui.cli import cli
 
 
 def setup():
     run_setup()
 
 
-def show_history():
-    response_history = history.get_history()
-    if not response_history:
-        print("No command history found")
-        return
-    
-    selected_query = cli.display_history_options(response_history)
-    
-    if selected_query in (None, "Cancel"):
-        return
-
-    selected = cli.display_command_options(response_history[selected_query].commands, f"Commands for '{selected_query}'")
-    
-    if selected != "Cancel" and selected is not None:
-        cli.copy_to_clipboard(selected)
-        return
-    
-
-
 def show_options(words: str):
     context = get_env_context()
+    console = Console()
     
-    def generate_response():
+    with console.status("[bold blue]Thinking...", spinner="dots"):
         inference_provider = get_inference_provider()
         response = inference_provider.get_options(prompt=words, context=context)
         history.save_options(words, response)
-        return response
     
-    response = cli.display_thinking_status(generate_response)
-            
     if response is None:
         return
 
@@ -55,20 +37,138 @@ def show_options(words: str):
         print("No commands available")
         return
 
-    selected = cli.display_command_options(response.commands, "Select command:")
+    selected = display_command_options(response.commands, "Select command:")
 
     if selected != "Cancel" and selected is not None:
-        cli.copy_to_clipboard(selected)
+        copy_to_clipboard(selected)
 
 
 def run_no_prompt():
-    input = cli.get_input_with_hint("Describe what you want to do:", "(-h for help)")
-    if handle_cli_args(input):
+    green = "\033[38;2;152;195;121m"  
+    gray = "\033[38;2;100;100;100m"   
+    reset = "\033[0m"
+
+    print(f"{green}{"Describe what you want to do: "}{gray}{"(-h for help)"}{reset}", end="")
+    user_input = input(" ")
+    
+    if handle_args(user_input):
         return
-    show_options(input)
+    show_options(user_input)
     
 
-def handle_cli_args(args):
+def display_command_options(commands, title="Select command:"):
+    if not commands:
+        print("No commands available")
+        return None
+
+    style = questionary.Style([
+        ("answer", "fg:#61afef"),
+        ("question", "bold"),
+        ("instruction", "fg:#98c379"),
+    ])
+
+    options = [
+        questionary.Choice(
+            cmd.command, 
+            description=cmd.short_explanation, 
+            value=cmd
+        ) for cmd in commands
+    ]
+        
+    options.append(questionary.Choice("Cancel"))
+    options.append(questionary.Separator())
+    
+    return questionary.select(
+        title,
+        choices=options,
+        use_shortcuts=True,
+        style=style,
+    ).ask()
+
+
+def display_history_options(history_items, show_limit=5):
+    if not history_items:
+        print("No command history found")
+        return None
+        
+    queries = list(history_items.keys())
+    
+    style = questionary.Style([
+        ("answer", "fg:#61afef"),
+        ("question", "bold"),
+        ("instruction", "fg:#98c379"),
+    ])
+        
+    query_options = [
+        questionary.Choice(query, value=query) 
+        for query in queries[:show_limit]
+    ]
+    
+    if len(history_items) > show_limit: 
+        query_options.append(
+            questionary.Choice("Show more...", value="show_more")
+        )
+    
+    query_options.append(questionary.Separator())
+    query_options.append(questionary.Choice("Cancel"))
+    
+    selected = questionary.select(
+        "Select from history:",
+        choices=query_options,
+        use_shortcuts=True,
+        style=style
+    ).ask()
+    
+    if selected == "show_more":
+        all_options = [
+            questionary.Choice(word, value=word) 
+            for word in history_items
+        ]
+        all_options.append(questionary.Separator())
+        all_options.append(questionary.Choice("Cancel"))
+        
+        return questionary.select(
+            "Select from history (showing all items):",
+            choices=all_options,
+            use_shortcuts=True,
+            style=style
+        ).ask()
+        
+    return selected
+
+
+def copy_to_clipboard(command):
+    try:
+        pyperclip.copy(command.command)
+        print("")
+        if command.dangerous_explanation:
+            rprint(f"[red]⚠️ Warning: {command.dangerous_explanation}[/red]\n")
+        rprint("[green]✓[/green] Copied to clipboard")
+    except pyperclip.PyperclipException as e:
+        rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
+        rprint("[cyan]Here is your command:[/cyan]")
+        print(command.command)
+
+
+def show_history():
+    response_history = history.get_history()
+    if not response_history:
+        print("No command history found")
+        return
+    
+    selected_query = display_history_options(response_history)
+    
+    if selected_query in (None, "Cancel"):
+        return
+
+    selected = display_command_options(response_history[selected_query].commands, f"Commands for '{selected_query}'")
+    
+    if selected != "Cancel" and selected is not None:
+        copy_to_clipboard(selected)
+        return
+
+
+def handle_args(args):
     if not args:
         return False
         
@@ -110,9 +210,9 @@ def app():
         if len(args) == 1 and args[0] == "--setup":
             return
         
-    if handle_cli_args(args):
+    if handle_args(args):
         return
-    
+
     dotenv.load_dotenv(config_path, override=True)
 
     if not args:
