@@ -8,6 +8,20 @@ def get_input_string(
     default: str = "",
     required: bool = False,
 ) -> str:
+    """
+    Returns the value of the field entered by the user.
+
+    Args:
+        field_name: name of field to be filled.
+        prompt: message displayed for user.
+        default (optional): default value of field.
+        required (optional): If True will keep prompting again while user
+        provides a value. Defaults to False.
+
+    Returns:
+        Value entered by the user.
+    """
+
     if default:
         prompt = f"{prompt} (default: {default})"
     else:
@@ -26,6 +40,13 @@ def get_input_string(
 
 
 def get_env_context() -> str:
+    """
+    Returns the environment info.
+
+    Returns:
+        Information about OS, SHELL.
+    """
+
     os_name = platform.platform(aliased=True)
     shell = os.environ.get("SHELL") or os.environ.get("COMSPEC")
     return f"OS: {os_name}\nSHELL: {shell}" if shell else f"OS: {os_name}"
