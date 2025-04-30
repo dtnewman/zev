@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+
 
 class Command(BaseModel):
     command: str
@@ -17,3 +17,4 @@ class OptionsResponse(BaseModel):
 class HistoryEntry(BaseModel):
     query: str
     response: OptionsResponse
+    
