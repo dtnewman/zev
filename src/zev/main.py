@@ -23,6 +23,7 @@ def show_options(words: str):
     with console.status("[bold blue]Thinking...", spinner="dots"):
         inference_provider = get_inference_provider()
         response = inference_provider.get_options(prompt=words, context=context)
+        history.save_options(words, response)
     if response is None:
         return
 
@@ -73,12 +74,10 @@ def run_no_prompt():
     show_options(input)
     
 
-def display_history_options(history_items, show_limit=5):
-    if not history_items:
+def display_history_options(history_entries, show_limit=5):
+    if not history_entries:
         print("No command history found")
         return None
-        
-    queries = list(history_items.keys())
     
     style = questionary.Style([
         ("answer", "fg:#61afef"),
@@ -88,10 +87,10 @@ def display_history_options(history_items, show_limit=5):
         
     query_options = [
         questionary.Choice(query, value=query) 
-        for query in queries[:show_limit]
+        for query in list(history_entries.keys())[:show_limit]
     ]
     
-    if len(history_items) > show_limit: 
+    if len(history_entries) > show_limit: 
         query_options.append(
             questionary.Choice("Show more...", value="show_more")
         )
@@ -108,8 +107,8 @@ def display_history_options(history_items, show_limit=5):
     
     if selected == "show_more":
         all_options = [
-            questionary.Choice(word, value=word) 
-            for word in history_items
+            questionary.Choice(query, value=query) 
+            for query in history_entries.keys()
         ]
         all_options.append(questionary.Separator())
         all_options.append(questionary.Choice("Cancel"))
@@ -125,17 +124,17 @@ def display_history_options(history_items, show_limit=5):
 
 
 def show_history():
-    response_history = history.get_history()
-    if not response_history:
+    history_entries = history.get_history() 
+    if not history_entries:
         print("No command history found")
         return
     
-    selected_query = display_history_options(response_history)
+    selected_query = display_history_options(history_entries)
     
     if selected_query in (None, "Cancel"):
         return
     
-    commands = response_history[selected_query].commands
+    commands = history_entries[selected_query].response.commands
 
     if not commands:
         print("No commands available")
