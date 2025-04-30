@@ -2,7 +2,9 @@ import questionary
 from rich import print as rprint
 from rich.console import Console
 import pyperclip
+from typing import Dict
 
+from zev.llms.types import OptionsResponse
 
 class CLI:
     """Handles CLI user interface interactions"""
@@ -37,7 +39,7 @@ class CLI:
         with self.console.status("[bold blue]Thinking...", spinner="dots"):
             return callback()
     
-    def display_command_options(self, commands, title="Select command:", history=False):
+    def display_command_options(self, commands, title="Select command:"):
         """Display command options and handle selection"""
         if not commands:
             print("No commands available")
@@ -50,9 +52,6 @@ class CLI:
                 value=cmd
             ) for cmd in commands
         ]
-        
-        if history:
-            options.append(questionary.Choice("Back", value="_back"))
             
         options.append(questionary.Choice("Cancel"))
         options.append(questionary.Separator())
@@ -64,15 +63,17 @@ class CLI:
             style=self.style,
         ).ask()
     
-    def display_history_options(self, history_items, show_limit=5):
+    def display_history_options(self, history_items: Dict[str, OptionsResponse], show_limit: int = 5):
         """Display history options and handle selection"""
         if not history_items:
             print("No command history found")
             return None
             
+        queries = list(history_items.keys())
+            
         query_options = [
-            questionary.Choice(word, value=word) 
-            for word in history_items[:show_limit]
+            questionary.Choice(query, value=query) 
+            for query in queries[:show_limit]
         ]
         
         if len(history_items) > show_limit: 

@@ -14,7 +14,7 @@ Zev is a simple CLI tool to help you remember terminal commands.
 Usage:
 zev [query]               Describe what you want to do
 zev --help, -h            Show this help message
-zev --last, -l            Show command history
+zev --past, -p            Show command history
 zev --setup               Run setup again
 zev --version             Show version information
 """)

@@ -19,24 +19,18 @@ def show_history():
     if not response_history:
         print("No command history found")
         return
-
-    history_items = list(response_history.keys())
     
-    while True:
-        selected_query = cli.display_history_options(history_items)
-        
-        if selected_query in (None, "Cancel"):
-            return
+    selected_query = cli.display_history_options(response_history)
+    
+    if selected_query in (None, "Cancel"):
+        return
 
-        selected = cli.display_command_options(response_history[selected_query].commands, f"Commands for '{selected_query}'", history=True)
-
-        if selected == "_back":
-            continue
-        elif selected != "Cancel" and selected is not None:
-            cli.copy_to_clipboard(selected)
-            return
-        else:
-            return
+    selected = cli.display_command_options(response_history[selected_query].commands, f"Commands for '{selected_query}'")
+    
+    if selected != "Cancel" and selected is not None:
+        cli.copy_to_clipboard(selected)
+        return
+    
 
 
 def show_options(words: str):
@@ -94,7 +88,7 @@ def handle_cli_args(args):
         print(f"zev version: {VERSION}")
         return True
     
-    if command in ("--last", "-l"):
+    if command in ("--past", "-p"):
         show_history()
         return True
     
