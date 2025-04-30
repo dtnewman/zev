@@ -195,7 +195,7 @@ def handle_args(args):
         return True
     
     if command in ("--version"):
-        print(f"zev version: {VERSION}")
+        print(f"zev version: 0.6.2")
         return True
     
     if command in ("--past", "-p"):

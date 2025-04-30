@@ -1,5 +1,3 @@
-VERSION = "0.6.2"
-
 class LLMProviders:
     OPENAI = "openai"
     OLLAMA = "ollama"
