@@ -49,3 +49,4 @@ zev --past, -p            Show command history
 zev --setup               Run setup again
 zev --version             Show version information
 """)
+    
