@@ -1,15 +1,15 @@
 import dotenv
 from pathlib import Path
-import sys
+import pyperclip
 import questionary
 from rich import print as rprint
 from rich.console import Console
-import pyperclip
+import sys
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME, VERSION
 from zev.llms.llm import get_inference_provider
-from zev.utils import get_env_context, show_help
+from zev.utils import get_env_context, show_help, get_input_string
 from zev.history.history import history
 
 
@@ -20,12 +20,9 @@ def setup():
 def show_options(words: str):
     context = get_env_context()
     console = Console()
-    
     with console.status("[bold blue]Thinking...", spinner="dots"):
         inference_provider = get_inference_provider()
         response = inference_provider.get_options(prompt=words, context=context)
-        history.save_options(words, response)
-    
     if response is None:
         return
 
@@ -37,54 +34,44 @@ def show_options(words: str):
         print("No commands available")
         return
 
-    selected = display_command_options(response.commands, "Select command:")
+    options = [
+        questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd) for cmd in response.commands
+    ]
+    options.append(questionary.Choice("Cancel"))
+    options.append(questionary.Separator())
 
-    if selected != "Cancel" and selected is not None:
-        copy_to_clipboard(selected)
+    selected = questionary.select(
+        "Select command:",
+        choices=options,
+        use_shortcuts=True,
+        style=questionary.Style(
+            [
+                ("answer", "fg:#61afef"),
+                ("question", "bold"),
+                ("instruction", "fg:#98c379"),
+            ]
+        ),
+    ).ask()
+
+    if selected != "Cancel":
+        print("")
+        if selected.dangerous_explanation:
+            rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
+        try:
+            pyperclip.copy(selected.command)
+            rprint("[green]✓[/green] Copied to clipboard")
+        except pyperclip.PyperclipException as e:
+            rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
+            rprint("[cyan]Here is your command:[/cyan]")
+            print(selected.command)
 
 
 def run_no_prompt():
-    green = "\033[38;2;152;195;121m"  
-    gray = "\033[38;2;100;100;100m"   
-    reset = "\033[0m"
-
-    print(f"{green}{"Describe what you want to do: "}{gray}{"(-h for help)"}{reset}", end="")
-    user_input = input(" ")
-    
-    if handle_args(user_input):
+    input = get_input_string("input", "Describe what you want to do:", required=False, help_text="(-h for help)")
+    if handle_args(input):
         return
-    show_options(user_input)
+    show_options(input)
     
-
-def display_command_options(commands, title="Select command:"):
-    if not commands:
-        print("No commands available")
-        return None
-
-    style = questionary.Style([
-        ("answer", "fg:#61afef"),
-        ("question", "bold"),
-        ("instruction", "fg:#98c379"),
-    ])
-
-    options = [
-        questionary.Choice(
-            cmd.command, 
-            description=cmd.short_explanation, 
-            value=cmd
-        ) for cmd in commands
-    ]
-        
-    options.append(questionary.Choice("Cancel"))
-    options.append(questionary.Separator())
-    
-    return questionary.select(
-        title,
-        choices=options,
-        use_shortcuts=True,
-        style=style,
-    ).ask()
-
 
 def display_history_options(history_items, show_limit=5):
     if not history_items:
@@ -137,19 +124,6 @@ def display_history_options(history_items, show_limit=5):
     return selected
 
 
-def copy_to_clipboard(command):
-    try:
-        pyperclip.copy(command.command)
-        print("")
-        if command.dangerous_explanation:
-            rprint(f"[red]⚠️ Warning: {command.dangerous_explanation}[/red]\n")
-        rprint("[green]✓[/green] Copied to clipboard")
-    except pyperclip.PyperclipException as e:
-        rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
-        rprint("[cyan]Here is your command:[/cyan]")
-        print(command.command)
-
-
 def show_history():
     response_history = history.get_history()
     if not response_history:
@@ -160,12 +134,48 @@ def show_history():
     
     if selected_query in (None, "Cancel"):
         return
+    
+    commands = response_history[selected_query].commands
 
-    selected = display_command_options(response_history[selected_query].commands, f"Commands for '{selected_query}'")
+    if not commands:
+        print("No commands available")
+        return None
+
+    style = questionary.Style([
+        ("answer", "fg:#61afef"),
+        ("question", "bold"),
+        ("instruction", "fg:#98c379"),
+    ])
+
+    options = [
+        questionary.Choice(
+            cmd.command, 
+            description=cmd.short_explanation, 
+            value=cmd
+        ) for cmd in commands
+    ]
+        
+    options.append(questionary.Choice("Cancel"))
+    options.append(questionary.Separator())
+    
+    selected = questionary.select(
+        f"Commands for '{selected_query}'",
+        choices=options,
+        use_shortcuts=True,
+        style=style,
+    ).ask()
     
     if selected != "Cancel" and selected is not None:
-        copy_to_clipboard(selected)
-        return
+        try:
+            pyperclip.copy(selected.command)
+            print("")
+            if selected.dangerous_explanation:
+                rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
+            rprint("[green]✓[/green] Copied to clipboard")
+        except pyperclip.PyperclipException as e:
+            rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
+            rprint("[cyan]Here is your command:[/cyan]")
+            print(selected.command)
 
 
 def handle_args(args):
