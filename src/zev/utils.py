@@ -15,7 +15,7 @@ def get_input_string(
         prompt = f"{prompt}"
 
     # ANSI escape code for green color (#98c379)
-    green_color = "\033[38;2;152;195;121m"  
+    green_color = "\033[38;2;152;195;121m"
     gray_color = "\033[38;2;100;100;100m"
     reset_color = "\033[0m"
 
@@ -49,4 +49,3 @@ zev --past, -p            Show command history
 zev --setup               Run setup again
 zev --version             Show version information
 """)
-    

@@ -74,98 +74,80 @@ def run_no_prompt():
     if handle_args(input):
         return
     show_options(input)
-    
+
 
 def display_history_options(history_entries, show_limit=5):
     if not history_entries:
         print("No command history found")
         return None
-    
-    style = questionary.Style([
-        ("answer", "fg:#61afef"),
-        ("question", "bold"),
-        ("instruction", "fg:#98c379"),
-    ])
-        
-    query_options = [
-        questionary.Choice(entry.query, value=entry) 
-        for entry in history_entries[:show_limit]
-    ]
-    
-    if len(history_entries) > show_limit: 
-        query_options.append(
-            questionary.Choice("Show more...", value="show_more")
-        )
-    
+
+    style = questionary.Style(
+        [
+            ("answer", "fg:#61afef"),
+            ("question", "bold"),
+            ("instruction", "fg:#98c379"),
+        ]
+    )
+
+    query_options = [questionary.Choice(entry.query, value=entry) for entry in history_entries[:show_limit]]
+
+    if len(history_entries) > show_limit:
+        query_options.append(questionary.Choice("Show more...", value="show_more"))
+
     query_options.append(questionary.Separator())
     query_options.append(questionary.Choice("Cancel"))
-    
-    selected = questionary.select(
-        "Select from history:",
-        choices=query_options,
-        use_shortcuts=True,
-        style=style
-    ).ask()
-    
+
+    selected = questionary.select("Select from history:", choices=query_options, use_shortcuts=True, style=style).ask()
+
     if selected == "show_more":
-        all_options = [
-            questionary.Choice(entry.query, value=entry) 
-            for entry in history_entries
-        ]
+        all_options = [questionary.Choice(entry.query, value=entry) for entry in history_entries]
         all_options.append(questionary.Separator())
         all_options.append(questionary.Choice("Cancel"))
-        
+
         return questionary.select(
-            "Select from history (showing all items):",
-            choices=all_options,
-            use_shortcuts=True,
-            style=style
+            "Select from history (showing all items):", choices=all_options, use_shortcuts=True, style=style
         ).ask()
-        
+
     return selected
 
 
 def show_history():
-    history_entries = history.get_history() 
+    history_entries = history.get_history()
     if not history_entries:
         print("No command history found")
         return
-    
+
     selected_entry = display_history_options(history_entries)
-    
+
     if selected_entry in (None, "Cancel"):
         return
-    
+
     commands = selected_entry.response.commands
 
     if not commands:
         print("No commands available")
         return None
 
-    style = questionary.Style([
-        ("answer", "fg:#61afef"),
-        ("question", "bold"),
-        ("instruction", "fg:#98c379"),
-    ])
+    style = questionary.Style(
+        [
+            ("answer", "fg:#61afef"),
+            ("question", "bold"),
+            ("instruction", "fg:#98c379"),
+        ]
+    )
 
-    options = [
-        questionary.Choice(
-            cmd.command, 
-            description=cmd.short_explanation, 
-            value=cmd
-        ) for cmd in commands
-    ]
-        
+    options = [questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd) for cmd in commands]
+
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())
-    
+
     selected = questionary.select(
         f"Commands for '{selected_entry.query}'",
         choices=options,
         use_shortcuts=True,
         style=style,
     ).ask()
-    
+
     if selected != "Cancel" and selected is not None:
         try:
             pyperclip.copy(selected.command)
@@ -174,7 +156,9 @@ def show_history():
                 rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
             rprint("[green]✓[/green] Copied to clipboard")
         except pyperclip.PyperclipException as e:
-            rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
+            rprint(
+                f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]"
+            )
             rprint("[cyan]Here is your command:[/cyan]")
             print(selected.command)
 
@@ -182,31 +166,31 @@ def show_history():
 def handle_args(args):
     if not args:
         return False
-        
+
     if isinstance(args, str):
         args = args.split()
-        
+
     if len(args) > 1:
         return False
-    
+
     command = args[0].lower()
-    
+
     if command in ("--setup"):
         setup()
         return True
-    
+
     if command in ("--version"):
-        print(f"zev version: 0.6.2")
+        print("zev version: 0.6.2")
         return True
-    
+
     if command in ("--past", "-p"):
         show_history()
         return True
-    
+
     if command in ("--help", "-h"):
         show_help()
         return True
-        
+
     return False
 
 
@@ -220,7 +204,7 @@ def app():
         print("Setup complete...\n")
         if len(args) == 1 and args[0] == "--setup":
             return
-        
+
     if handle_args(args):
         return
 

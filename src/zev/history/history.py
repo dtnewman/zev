@@ -29,17 +29,13 @@ class History:
 
     def get_history(self) -> list[HistoryEntry]:
         with open(self.path, "r", encoding=self.encoding) as f:
-            entries = [
-                HistoryEntry.model_validate_json(line)
-                for line in f
-                if line.strip()
-            ]
+            entries = [HistoryEntry.model_validate_json(line) for line in f if line.strip()]
 
         if not entries:
             return None
 
         return list(reversed(entries))
-    
+
     def _enforce_limit(self) -> None:
         with open(self.path, "r+", encoding=self.encoding) as f:
             lines = f.readlines()
