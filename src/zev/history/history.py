@@ -1,7 +1,14 @@
 from pathlib import Path
 from typing import Optional
+from pydantic import BaseModel
 
-from zev.llms.types import OptionsResponse, HistoryEntry
+from zev.llms.types import OptionsResponse
+
+
+class HistoryEntry(BaseModel):
+    query: str
+    response: OptionsResponse
+
 
 class History:
     def __init__(self, max_entries: int = 100, file: Optional[Path] = None) -> None:

@@ -14,8 +14,4 @@ class OptionsResponse(BaseModel):
     is_valid: bool
     explanation_if_not_valid: Optional[str] = None
 
-class HistoryEntry(BaseModel):
-    query: str
-    response: OptionsResponse
-    
 
