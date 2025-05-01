@@ -62,7 +62,9 @@ def show_options(words: str):
             pyperclip.copy(selected.command)
             rprint("[green]✓[/green] Copied to clipboard")
         except pyperclip.PyperclipException as e:
-            rprint(f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]")
+            rprint(
+                f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]"
+            )
             rprint("[cyan]Here is your command:[/cyan]")
             print(selected.command)
 

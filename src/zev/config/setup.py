@@ -41,7 +41,7 @@ setup_questions = [
 
 def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[str, str]:
     existing_answer = answers.get(question.name)
-    if type(question) == SetupQuestionSelect:
+    if type(question) is SetupQuestionSelect:
         # Find the matching option for the default value
         default_option = None
         if existing_answer:
@@ -58,7 +58,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
         answers[question.name] = answer.value
         for q in answer.follow_up_questions:
             answers.update(prompt_question(q, answers=answers))
-    elif type(question) == SetupQuestionText:
+    elif type(question) is SetupQuestionText:
         answer = questionary.text(
             question.prompt, default=existing_answer or question.default, validate=question.validator
         ).ask()

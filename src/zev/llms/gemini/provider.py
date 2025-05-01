@@ -1,10 +1,8 @@
 from google import genai
-import json
 
 from zev.config import config
 from zev.constants import PROMPT, GEMINI_DEFAULT_MODEL
 from zev.llms.inference_provider_base import InferenceProvider
-from zev.llms.openai.provider import OpenAIProvider
 from zev.llms.types import OptionsResponse
 
 

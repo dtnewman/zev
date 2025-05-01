@@ -102,7 +102,7 @@ Note that to switch backends, you can re-run `zev --setup` again at any time.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📄 License
 

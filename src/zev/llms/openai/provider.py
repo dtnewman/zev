@@ -23,6 +23,6 @@ class OpenAIProvider(InferenceProvider):
                 response_format=OptionsResponse,
             )
             return response.choices[0].message.parsed
-        except AuthenticationError as e:
+        except AuthenticationError:
             print("Error: There was an error with your OpenAI API key. You can change it by running `zev --setup`.")
             return
