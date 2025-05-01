@@ -13,5 +13,3 @@ class OptionsResponse(BaseModel):
     commands: list[Command]
     is_valid: bool
     explanation_if_not_valid: Optional[str] = None
-
-
