@@ -5,6 +5,7 @@ import questionary
 from rich import print as rprint
 from rich.console import Console
 import sys
+from subprocess import run as run_command
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
@@ -61,10 +62,12 @@ def show_options(words: str):
             rprint("[green]✓[/green] Copied to clipboard")
         except pyperclip.PyperclipException as e:
             rprint(
-                f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]"
+                f"[red]Could not copy to clipboard (see https://github.com/dtnewman/zev?tab=readme-ov-file#-dependencies)[/red]\n"
             )
-            rprint("[cyan]Here is your command:[/cyan]")
+            rprint(f"[cyan]Here is your command:[/cyan]")
             print(selected.command)
+            if questionary.confirm("Do you like to run it?").ask():
+                run_command(selected.command, shell=True)
 
 
 def run_no_prompt():
