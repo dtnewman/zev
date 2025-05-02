@@ -25,13 +25,13 @@ For clipboard functionality (copying and pasting) to work properly, you may need
 
 ## 🎮 Usage
 
-#### Option 1: Interactive Mode
+### Option 1: Interactive Mode
 
 ```bash
 zev
 ```
 
-#### Option 2: Direct Query
+### Option 2: Direct Query
 
 ```bash
 zev '<what you want to do>'
@@ -93,7 +93,7 @@ You can use Zev with [Ollama](https://ollama.ai/) as an alternative to hosted pr
 
 2. Run `zev --setup` and put in the proper settings. For example:
 
-```
+``` bash
 ? Pick your LLM provider: Ollama
 ? Enter the Ollama URL: http://localhost:11434/v1
 ? Enter the model to use (e.g. llama3.2): llama3.2
