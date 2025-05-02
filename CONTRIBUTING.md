@@ -39,6 +39,7 @@ Keep PRs specific, to the point and focused on one thing.
 
 - Follow the existing code style in the project
 - Run `ruff check` and `ruff format` to validate and format your code
+- Run `isort` to sort imports correctly
 
 ## Questions or Issues?
 

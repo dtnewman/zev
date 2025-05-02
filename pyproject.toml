@@ -1,6 +1,6 @@
 [project]
 name = "zev"
-version = "0.6.2"
+version = "0.6.3"
 description = "Lookup CLI commands easily"
 readme = "README.md"
 dependencies = [
@@ -10,8 +10,7 @@ dependencies = [
     "pyperclip>=1.9.0",
     "python-dotenv>=1.0.1",
     "questionary>=2.1.0",
-    "rich>=13.9.4",
-    "azure-identity>=1.20.0"
+    "rich>=13.9.4"
 ]
 requires-python = ">=3.9"
 urls = { Repository = "https://github.com/dtnewman/zev" }
@@ -21,7 +20,11 @@ zev = "zev.main:app"
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.11.2"
+    "ruff>=0.11.2",
+    "isort>=5.13.2"
+]
+azure = [
+    "azure-identity>=1.20.0"
 ]
 
 [build-system]
@@ -34,3 +37,7 @@ include = ["zev*"]
 
 [tool.ruff]
 line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
