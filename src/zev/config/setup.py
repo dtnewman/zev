@@ -52,9 +52,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
         # Find the matching option for the default value
         default_option = None
         if existing_answer:
-            default_option = next(
-                (opt for opt in question.options if opt.value == existing_answer), None
-            )
+            default_option = next((opt for opt in question.options if opt.value == existing_answer), None)
 
         selected_option: SetupQuestionSelectOption = questionary.select(
             question.prompt,
@@ -62,7 +60,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
                 questionary.Choice(option.label, description=option.description, value=option)
                 for option in question.options
             ],
-            default=default_option.value if default_option else None
+            default=default_option.value if default_option else None,
         ).ask()
 
         answers[question.name] = selected_option.value
@@ -82,9 +80,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
 
 def run_setup():
     config_path = Path.home() / ".zevrc"
-    answers = dotenv_values(
-        config_path
-    )  # load in current values and then override as necessary
+    answers = dotenv_values(config_path)  # load in current values and then override as necessary
     for question in setup_questions:
         answers.update(prompt_question(question, answers))
 

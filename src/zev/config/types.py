@@ -29,7 +29,5 @@ class SetupQuestionSelect(SetupQuestion):
 class SetupQuestionText(SetupQuestion):
     """Prompts the user to enter text"""
 
-    validator: Optional[Callable] = (
-        None  # a function that takes answer and returns a bool
-    )
+    validator: Optional[Callable] = None  # a function that takes answer and returns a bool
     default: Optional[str] = ""

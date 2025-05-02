@@ -35,8 +35,7 @@ def show_options(words: str):
         return
 
     options = [
-        questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd)
-        for cmd in response.commands
+        questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd) for cmd in response.commands
     ]
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())

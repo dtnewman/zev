@@ -7,7 +7,9 @@ from zev.llms.types import OptionsResponse
 
 
 class OpenAIProvider(InferenceProvider):
-    AUTH_ERROR_MESSAGE = "Error: There was an error with your OpenAI API key. You can change it by running `zev --setup`."
+    AUTH_ERROR_MESSAGE = (
+        "Error: There was an error with your OpenAI API key. You can change it by running `zev --setup`."
+    )
 
     def __init__(self):
         if not config.openai_api_key:

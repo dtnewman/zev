@@ -18,9 +18,7 @@ class AzureOpenAIProvider(OpenAIProvider):
             if not value:
                 raise ValueError(f"{var} must be set. Run `zev --setup`.")
 
-        azure_openai_endpoint = (
-            f"https://{config.azure_openai_account_name}.openai.azure.com/"
-        )
+        azure_openai_endpoint = f"https://{config.azure_openai_account_name}.openai.azure.com/"
 
         if config.azure_openai_api_key:
             self.client = AzureOpenAI(
@@ -35,9 +33,7 @@ class AzureOpenAIProvider(OpenAIProvider):
                     get_bearer_token_provider,
                 )
             except ImportError as exc:
-                raise ImportError(
-                    "Missing required Azure packages. Run `pip install zev[azure]`"
-                ) from exc
+                raise ImportError("Missing required Azure packages. Run `pip install zev[azure]`") from exc
             token_provider = get_bearer_token_provider(
                 DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
             )
