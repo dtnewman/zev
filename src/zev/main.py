@@ -69,8 +69,8 @@ def show_options(words: str):
 
 
 def run_no_prompt():
-    input = get_input_string("input", "Describe what you want to do", "", False)
-    show_options(input)
+    user_input = get_input_string("input", "Describe what you want to do", "", False)
+    show_options(user_input)
 
 
 def app():
