@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from dotenv import dotenv_values
 
 
@@ -50,7 +51,7 @@ class Config:
     @property
     def azure_openai_deployment(self):
         return self.vals.get("AZURE_OPENAI_DEPLOYMENT")
-    
+
     @property
     def azure_openai_api_version(self):
         return self.vals.get("AZURE_OPENAI_API_VERSION")

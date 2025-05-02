@@ -1,6 +1,5 @@
 from zev.config.types import SetupQuestionText
 
-
 questions = (
     SetupQuestionText(
         name="OLLAMA_BASE_URL",

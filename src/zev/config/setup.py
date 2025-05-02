@@ -1,19 +1,15 @@
-from dotenv import dotenv_values
 from pathlib import Path
-import questionary
 from typing import Dict
 
-from zev.config.types import (
-    SetupQuestion,
-    SetupQuestionSelect,
-    SetupQuestionText,
-    SetupQuestionSelectOption,
-)
+import questionary
+from dotenv import dotenv_values
+
+from zev.config.types import SetupQuestion, SetupQuestionSelect, SetupQuestionSelectOption, SetupQuestionText
 from zev.constants import LLMProviders
 from zev.llms.azure_openai.setup import questions as azure_questions
+from zev.llms.gemini.setup import questions as gemini_questions
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
-from zev.llms.gemini.setup import questions as gemini_questions
 
 setup_questions = [
     SetupQuestionSelect(

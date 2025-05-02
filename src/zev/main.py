@@ -1,10 +1,11 @@
-import dotenv
+import sys
 from pathlib import Path
+
+import dotenv
 import pyperclip
 import questionary
 from rich import print as rprint
 from rich.console import Console
-import sys
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME

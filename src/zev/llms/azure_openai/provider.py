@@ -1,10 +1,10 @@
 from azure.identity import DefaultAzureCredential
+from openai import AuthenticationError, AzureOpenAI
+
 from zev.config import config
 from zev.constants import PROMPT
 from zev.llms.inference_provider_base import InferenceProvider
 from zev.llms.types import OptionsResponse
-
-from openai import AuthenticationError, AzureOpenAI
 
 
 class AzureOpenAIProvider(InferenceProvider):
@@ -19,9 +19,7 @@ class AzureOpenAIProvider(InferenceProvider):
             if not value:
                 raise ValueError(f"{var} must be set. Run `zev --setup`.")
 
-        azure_openai_endpoint = (
-            f"https://{config.azure_openai_account_name}.openai.azure.com/"
-        )
+        azure_openai_endpoint = f"https://{config.azure_openai_account_name}.openai.azure.com/"
 
         if config.azure_openai_api_key:
             self.client = AzureOpenAI(
@@ -30,9 +28,7 @@ class AzureOpenAIProvider(InferenceProvider):
                 api_version=config.azure_openai_api_version,
             )
         else:
-            token = DefaultAzureCredential().get_token(
-                "https://cognitiveservices.azure.com/.default"
-            )
+            token = DefaultAzureCredential().get_token("https://cognitiveservices.azure.com/.default")
             self.client = AzureOpenAI(
                 azure_endpoint=azure_openai_endpoint,
                 api_version=config.azure_openai_api_version,
@@ -51,7 +47,5 @@ class AzureOpenAIProvider(InferenceProvider):
             )
             return response.choices[0].message.parsed
         except AuthenticationError:
-            print(
-                "Authentication error. Check Azure credentials or run `zev --setup` again."
-            )
+            print("Authentication error. Check Azure credentials or run `zev --setup` again.")
             return None

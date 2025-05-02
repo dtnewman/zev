@@ -1,4 +1,4 @@
-from openai import OpenAI, AuthenticationError
+from openai import AuthenticationError, OpenAI
 
 from zev.config import config
 from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, PROMPT
