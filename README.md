@@ -103,9 +103,9 @@ You can use Zev with [Ollama](https://ollama.ai/) as an alternative to hosted pr
 
 To use Azure OpenAI, you’ll need access to an [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service) resource in your Azure subscription.
 
-1. Create a deployment of the model you want to use (e.g., `gpt-4o`, `gpt-4o-mini` etc.)
+1. Create a deployment of the model you want to use (e.g., `gpt-4o`, `gpt-4o-mini` etc.).
 
-    > **Note:** Model version must be 2024-08-06 or newer.
+1. Install required Azure depedencies with `pip install zev[azure]`.
 
 1. Run `zev --setup` and put in the proper settings. For example:
 
@@ -117,7 +117,8 @@ To use Azure OpenAI, you’ll need access to an [Azure OpenAI](https://azure.mic
     ? Azure OpenAI API version: 2025-03-01-preview
     ```
 
-    > **Note:** API version must be 2024-08-01-preview or newer.
+    > **Note:** Model version must be 2024-08-06 or newer.  
+    > API version must be 2024-08-01-preview or newer.
 
 Note that to switch backends, you can re-run `zev --setup` again at any time.
 
