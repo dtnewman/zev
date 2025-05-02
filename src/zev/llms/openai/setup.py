@@ -1,4 +1,8 @@
-from zev.config.types import SetupQuestionSelect, SetupQuestionSelectOption, SetupQuestionText
+from zev.config.types import (
+    SetupQuestionSelect,
+    SetupQuestionSelectOption,
+    SetupQuestionText,
+)
 
 questions = (
     SetupQuestionText(

@@ -4,7 +4,12 @@ from typing import Dict
 import questionary
 from dotenv import dotenv_values
 
-from zev.config.types import SetupQuestion, SetupQuestionSelect, SetupQuestionSelectOption, SetupQuestionText
+from zev.config.types import (
+    SetupQuestion,
+    SetupQuestionSelect,
+    SetupQuestionSelectOption,
+    SetupQuestionText,
+)
 from zev.constants import LLMProviders
 from zev.llms.azure_openai.setup import questions as azure_questions
 from zev.llms.gemini.setup import questions as gemini_questions
@@ -47,12 +52,16 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
         # Find the matching option for the default value
         default_option = None
         if existing_answer:
-            default_option = next((opt for opt in question.options if opt.value == existing_answer), None)
+            default_option = next(
+                (opt for opt in question.options if opt.value == existing_answer), None
+            )
 
         answer: SetupQuestionSelect = questionary.select(
             question.prompt,
             choices=[
-                questionary.Choice(option.label, description=option.description, value=option)
+                questionary.Choice(
+                    option.label, description=option.description, value=option
+                )
                 for option in question.options
             ],
             default=default_option,
@@ -62,7 +71,9 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
             answers.update(prompt_question(q, answers=answers))
     elif isinstance(question, SetupQuestionText):
         answer = questionary.text(
-            question.prompt, default=existing_answer or question.default, validate=question.validator
+            question.prompt,
+            default=existing_answer or question.default,
+            validate=question.validator,
         ).ask()
         answers[question.name] = answer
     else:
@@ -72,7 +83,9 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
 
 def run_setup():
     config_path = Path.home() / ".zevrc"
-    answers = dotenv_values(config_path)  # load in current values and then override as necessary
+    answers = dotenv_values(
+        config_path
+    )  # load in current values and then override as necessary
     for question in setup_questions:
         answers.update(prompt_question(question, answers))
 
