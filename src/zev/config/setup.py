@@ -56,23 +56,22 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
                 (opt for opt in question.options if opt.value == existing_answer), None
             )
 
-        answer: SetupQuestionSelect = questionary.select(
+        selected_option: SetupQuestionSelectOption = questionary.select(
             question.prompt,
             choices=[
-                questionary.Choice(
-                    option.label, description=option.description, value=option
-                )
+                questionary.Choice(option.label, description=option.description, value=option)
                 for option in question.options
             ],
-            default=default_option,
+            default=default_option.value if default_option else None
         ).ask()
-        answers[question.name] = answer.value
-        for q in answer.follow_up_questions:
+
+        answers[question.name] = selected_option.value
+        for q in selected_option.follow_up_questions:
             answers.update(prompt_question(q, answers=answers))
     elif isinstance(question, SetupQuestionText):
         answer = questionary.text(
             question.prompt,
-            default=existing_answer or question.default,
+            default=existing_answer or question.default or "",
             validate=question.validator,
         ).ask()
         answers[question.name] = answer

@@ -29,4 +29,4 @@ class GeminiProvider(InferenceProvider):
         except genai.errors.ClientError as e:
             print("Error:", e.details["error"]["message"])
             print("Note that to update settings, you can run `zev --setup`.")
-            return
+            return None

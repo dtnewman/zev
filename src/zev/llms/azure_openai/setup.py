@@ -1,6 +1,6 @@
 from zev.config.types import SetupQuestionText
 
-questions = [
+questions = (
     SetupQuestionText(
         name="AZURE_OPENAI_ACCOUNT_NAME",
         prompt="Azure OpenAI account name (e.g. my-openai-resource):",
@@ -21,4 +21,4 @@ questions = [
         prompt="Azure OpenAI API version:",
         default="2025-03-01-preview",
     ),
-]
+)
