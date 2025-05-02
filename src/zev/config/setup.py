@@ -10,6 +10,7 @@ from zev.config.types import (
     SetupQuestionSelectOption,
 )
 from zev.constants import LLMProviders
+from zev.llms.azure_openai.setup import questions as azure_questions
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
 from zev.llms.gemini.setup import questions as gemini_questions
@@ -33,6 +34,11 @@ setup_questions = [
                 value=LLMProviders.GEMINI,
                 label="Gemini",
                 follow_up_questions=gemini_questions,
+            ),
+            SetupQuestionSelectOption(
+                value=LLMProviders.AZURE_OPENAI,
+                label="Azure OpenAI",
+                follow_up_questions=azure_questions,
             ),
         ],
     )
