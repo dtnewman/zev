@@ -1,18 +1,20 @@
-from dotenv import dotenv_values
 from pathlib import Path
-import questionary
 from typing import Dict
+
+import questionary
+from dotenv import dotenv_values
 
 from zev.config.types import (
     SetupQuestion,
     SetupQuestionSelect,
-    SetupQuestionText,
     SetupQuestionSelectOption,
+    SetupQuestionText,
 )
 from zev.constants import LLMProviders
+from zev.llms.azure_openai.setup import questions as azure_questions
+from zev.llms.gemini.setup import questions as gemini_questions
 from zev.llms.ollama.setup import questions as ollama_questions
 from zev.llms.openai.setup import questions as openai_questions
-from zev.llms.gemini.setup import questions as gemini_questions
 
 setup_questions = [
     SetupQuestionSelect(
@@ -34,6 +36,11 @@ setup_questions = [
                 label="Gemini",
                 follow_up_questions=gemini_questions,
             ),
+            SetupQuestionSelectOption(
+                value=LLMProviders.AZURE_OPENAI,
+                label="Azure OpenAI",
+                follow_up_questions=azure_questions,
+            ),
         ],
     )
 ]
@@ -41,26 +48,29 @@ setup_questions = [
 
 def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[str, str]:
     existing_answer = answers.get(question.name)
-    if type(question) is SetupQuestionSelect:
+    if isinstance(question, SetupQuestionSelect):
         # Find the matching option for the default value
         default_option = None
         if existing_answer:
             default_option = next((opt for opt in question.options if opt.value == existing_answer), None)
 
-        answer: SetupQuestionSelect = questionary.select(
+        selected_option: SetupQuestionSelectOption = questionary.select(
             question.prompt,
             choices=[
                 questionary.Choice(option.label, description=option.description, value=option)
                 for option in question.options
             ],
-            default=default_option,
+            default=default_option.value if default_option else None,
         ).ask()
-        answers[question.name] = answer.value
-        for q in answer.follow_up_questions:
+
+        answers[question.name] = selected_option.value
+        for q in selected_option.follow_up_questions:
             answers.update(prompt_question(q, answers=answers))
-    elif type(question) is SetupQuestionText:
+    elif isinstance(question, SetupQuestionText):
         answer = questionary.text(
-            question.prompt, default=existing_answer or question.default, validate=question.validator
+            question.prompt,
+            default=existing_answer or question.default or "",
+            validate=question.validator,
         ).ask()
         answers[question.name] = answer
     else:
@@ -78,5 +88,5 @@ def run_setup():
     for env_var_name, value in answers.items():
         new_file += f"{env_var_name}={value}\n"
 
-    with open(config_path, "w") as f:
+    with open(config_path, "w", encoding="utf-8") as f:
         f.write(new_file)

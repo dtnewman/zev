@@ -1,4 +1,4 @@
-from openai import OpenAI, AuthenticationError
+from openai import AuthenticationError, OpenAI
 
 from zev.config import config
 from zev.constants import OPENAI_BASE_URL, OPENAI_DEFAULT_MODEL, PROMPT
@@ -7,6 +7,10 @@ from zev.llms.types import OptionsResponse
 
 
 class OpenAIProvider(InferenceProvider):
+    AUTH_ERROR_MESSAGE = (
+        "Error: There was an error with your OpenAI API key. You can change it by running `zev --setup`."
+    )
+
     def __init__(self):
         if not config.openai_api_key:
             raise ValueError("OPENAI_API_KEY must be set. Try running `zev --setup`.")
@@ -24,5 +28,5 @@ class OpenAIProvider(InferenceProvider):
             )
             return response.choices[0].message.parsed
         except AuthenticationError:
-            print("Error: There was an error with your OpenAI API key. You can change it by running `zev --setup`.")
-            return
+            print(self.AUTH_ERROR_MESSAGE)
+            return None

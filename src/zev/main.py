@@ -1,5 +1,7 @@
-import dotenv
+import sys
 from pathlib import Path
+
+import dotenv
 import pyperclip
 import questionary
 from rich import print as rprint
@@ -71,8 +73,8 @@ def show_options(words: str):
 
 
 def run_no_prompt():
-    input = get_input_string("input", "Describe what you want to do", "", False)
-    show_options(input)
+    user_input = get_input_string("input", "Describe what you want to do", "", False)
+    show_options(user_input)
 
 
 def app():
@@ -91,7 +93,7 @@ def app():
         print("Setup complete...\n")
         return
     elif len(args) == 1 and args[0] == "--version":
-        print("zev version: 0.6.2")
+        print("zev version: 0.7.0")
         return
 
     # important: make sure this is loaded before actually running the app (in regular or interactive mode)

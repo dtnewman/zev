@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple
 
 
 @dataclass
@@ -9,7 +9,7 @@ class SetupQuestionSelectOption:
     value: str
     label: str
     description: Optional[str] = None
-    follow_up_questions: Tuple["SetupQuestion"] = ()
+    follow_up_questions: Tuple["SetupQuestion", ...] = ()
 
 
 @dataclass
@@ -29,5 +29,5 @@ class SetupQuestionSelect(SetupQuestion):
 class SetupQuestionText(SetupQuestion):
     """Prompts the user to enter text"""
 
-    validator: Optional[callable] = None  # a function that takes answer and returns a bool
+    validator: Optional[Callable] = None  # a function that takes answer and returns a bool
     default: Optional[str] = ""

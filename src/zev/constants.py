@@ -2,6 +2,7 @@ class LLMProviders:
     OPENAI = "openai"
     OLLAMA = "ollama"
     GEMINI = "gemini"
+    AZURE_OPENAI = "azure_openai"
 
 
 DEFAULT_PROVIDER = LLMProviders.OPENAI
