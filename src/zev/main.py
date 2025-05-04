@@ -10,9 +10,9 @@ from rich.console import Console
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
-from zev.llms.llm import get_inference_provider
-from zev.utils import get_env_context, show_help, get_input_string
 from zev.history import history
+from zev.llms.llm import get_inference_provider
+from zev.utils import get_env_context, get_input_string, show_help
 
 
 def setup():
