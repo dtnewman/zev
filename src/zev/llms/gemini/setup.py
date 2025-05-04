@@ -1,4 +1,8 @@
-from zev.config.types import SetupQuestionText, SetupQuestionSelect, SetupQuestionSelectOption
+from zev.config.types import (
+    SetupQuestionSelect,
+    SetupQuestionSelectOption,
+    SetupQuestionText,
+)
 
 questions = (
     SetupQuestionText(
@@ -16,7 +20,9 @@ questions = (
                 description="Low latency, good for summarization, good performance",
             ),
             SetupQuestionSelectOption(
-                value="gemini-2.0-flash", label="gemini-2.0-flash", description="Long context, good performance"
+                value="gemini-2.0-flash",
+                label="gemini-2.0-flash",
+                description="Long context, good performance",
             ),
         ],
     ),

@@ -1,7 +1,7 @@
 from openai import OpenAI
 
-from zev.llms.openai.provider import OpenAIProvider
 from zev.config import config
+from zev.llms.openai.provider import OpenAIProvider
 
 
 class OllamaProvider(OpenAIProvider):

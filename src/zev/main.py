@@ -1,10 +1,12 @@
-import dotenv
+import sys
 from pathlib import Path
+from subprocess import run as run_command
+
+import dotenv
 import pyperclip
 import questionary
 from rich import print as rprint
 from rich.console import Console
-import sys
 
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
@@ -63,17 +65,25 @@ def show_options(words: str):
             rprint("[green]✓[/green] Copied to clipboard")
         except pyperclip.PyperclipException as e:
             rprint(
-                f"[red]Could not copy to clipboard: {e} (the clipboard may not work at all if you are running over SSH)[/red]"
+                "[red]Could not copy to clipboard (see https://github.com/dtnewman/zev?tab=readme-ov-file#-dependencies)[/red]\n"
             )
             rprint("[cyan]Here is your command:[/cyan]")
             print(selected.command)
+            if questionary.confirm("Would you like to run it?").ask():
+                print("Running command:", selected.command)
+                run_command(selected.command, shell=True)
 
 
 def run_no_prompt():
+<<<<<<< HEAD
     input = get_input_string("input", "Describe what you want to do:", required=False, help_text="(-h for help)")
     if handle_args(input):
         return
     show_options(input)
+=======
+    user_input = get_input_string("input", "Describe what you want to do", "", False)
+    show_options(user_input)
+>>>>>>> main
 
 
 def display_history_options(history_entries, show_limit=5):
@@ -204,8 +214,18 @@ def app():
         print("Setup complete...\n")
         if len(args) == 1 and args[0] == "--setup":
             return
+<<<<<<< HEAD
 
     if handle_args(args):
+=======
+    elif len(args) == 1 and args[0] == "--setup":
+        dotenv.load_dotenv(config_path, override=True)
+        run_setup()
+        print("Setup complete...\n")
+        return
+    elif len(args) == 1 and args[0] == "--version":
+        print("zev version: 0.7.1")
+>>>>>>> main
         return
 
     dotenv.load_dotenv(config_path, override=True)

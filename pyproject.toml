@@ -1,6 +1,6 @@
 [project]
 name = "zev"
-version = "0.6.2"
+version = "0.7.0"
 description = "Lookup CLI commands easily"
 readme = "README.md"
 dependencies = [
@@ -20,7 +20,11 @@ zev = "zev.main:app"
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.11.2"
+    "ruff>=0.11.2",
+    "isort>=5.13.2"
+]
+azure = [
+    "azure-identity>=1.20.0"
 ]
 
 [build-system]
@@ -33,3 +37,9 @@ include = ["zev*"]
 
 [tool.ruff]
 line-length = 120
+# this ensures imports are properly sorted
+lint.select = ["I001"]
+
+[tool.isort]
+profile = "black"
+line_length = 120

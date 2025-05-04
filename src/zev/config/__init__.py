@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from dotenv import dotenv_values
 
 
@@ -37,6 +38,23 @@ class Config:
     @property
     def gemini_api_key(self):
         return self.vals.get("GEMINI_API_KEY")
+
+    # Azure OpenAI
+    @property
+    def azure_openai_account_name(self):
+        return self.vals.get("AZURE_OPENAI_ACCOUNT_NAME")
+
+    @property
+    def azure_openai_api_key(self):
+        return self.vals.get("AZURE_OPENAI_API_KEY")
+
+    @property
+    def azure_openai_deployment(self):
+        return self.vals.get("AZURE_OPENAI_DEPLOYMENT")
+
+    @property
+    def azure_openai_api_version(self):
+        return self.vals.get("AZURE_OPENAI_API_VERSION")
 
 
 config = Config()

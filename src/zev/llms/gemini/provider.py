@@ -1,7 +1,7 @@
 from google import genai
 
 from zev.config import config
-from zev.constants import PROMPT, GEMINI_DEFAULT_MODEL
+from zev.constants import GEMINI_DEFAULT_MODEL, PROMPT
 from zev.llms.inference_provider_base import InferenceProvider
 from zev.llms.types import OptionsResponse
 
@@ -29,4 +29,4 @@ class GeminiProvider(InferenceProvider):
         except genai.errors.ClientError as e:
             print("Error:", e.details["error"]["message"])
             print("Note that to update settings, you can run `zev --setup`.")
-            return
+            return None
