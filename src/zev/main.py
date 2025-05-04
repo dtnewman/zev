@@ -12,7 +12,7 @@ from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
 from zev.utils import get_env_context, show_help, get_input_string
-from zev.history.history import history
+from zev.history import history
 
 
 def setup():
@@ -75,15 +75,10 @@ def show_options(words: str):
 
 
 def run_no_prompt():
-<<<<<<< HEAD
     input = get_input_string("input", "Describe what you want to do:", required=False, help_text="(-h for help)")
     if handle_args(input):
         return
     show_options(input)
-=======
-    user_input = get_input_string("input", "Describe what you want to do", "", False)
-    show_options(user_input)
->>>>>>> main
 
 
 def display_history_options(history_entries, show_limit=5):
@@ -214,18 +209,8 @@ def app():
         print("Setup complete...\n")
         if len(args) == 1 and args[0] == "--setup":
             return
-<<<<<<< HEAD
 
     if handle_args(args):
-=======
-    elif len(args) == 1 and args[0] == "--setup":
-        dotenv.load_dotenv(config_path, override=True)
-        run_setup()
-        print("Setup complete...\n")
-        return
-    elif len(args) == 1 and args[0] == "--version":
-        print("zev version: 0.7.1")
->>>>>>> main
         return
 
     dotenv.load_dotenv(config_path, override=True)
