@@ -13,6 +13,7 @@ GEMINI_DEFAULT_MODEL = "gemini-2.0-flash"
 
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 CONFIG_FILE_NAME = ".zevrc"
+HISTORY_FILE_NAME = ".zevhistory"
 
 PROMPT = """
 You are a helpful assistant that helps users remember commands for the terminal. You 
