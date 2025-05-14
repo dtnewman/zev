@@ -8,3 +8,4 @@ src/*.egg-info
 
 # dist
 /dist
+.aider*

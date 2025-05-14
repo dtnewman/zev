@@ -14,6 +14,7 @@ GEMINI_BASE_URL = "https://generativelanguage.googleapis.com"
 
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 CONFIG_FILE_NAME = ".zevrc"
+HISTORY_FILE_NAME = ".zevhistory"
 
 GEMINI_RESPONSE_SCHEMA = {
     "response_mime_type": "application/json",
