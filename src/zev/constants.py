@@ -15,6 +15,37 @@ GEMINI_BASE_URL = "https://generativelanguage.googleapis.com"
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 CONFIG_FILE_NAME = ".zevrc"
 
+GEMINI_RESPONSE_SCHEMA = {
+    "response_mime_type": "application/json",
+    "response_schema": {
+        "type": "OBJECT",
+        "properties": {
+            "commands": {
+                "type": "ARRAY",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "command": {"type": "STRING"},
+                        "short_explanation": {"type": "STRING"},
+                        "is_dangerous": {"type": "BOOLEAN"},
+                        "dangerous_explanation": {"type": "STRING"},
+                    },
+                    "required": [
+                        "command",
+                        "short_explanation",
+                        "is_dangerous",
+                        "dangerous_explanation",
+                    ],
+                },
+            },
+            "is_valid": {"type": "BOOLEAN"},
+            "explanation_if_not_valid": {"type": "STRING"},
+        },
+        "required": ["commands", "is_valid", "explanation_if_not_valid"],
+    },
+}
+
+
 PROMPT = """
 You are a helpful assistant that helps users remember commands for the terminal. You 
 will return a JSON object with a list of at most three options.

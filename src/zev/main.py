@@ -26,16 +26,17 @@ def show_options(words: str):
         response = inference_provider.get_options(prompt=words, context=context)
     if response is None:
         return
-    if not response['is_valid']:
-        print(response['explanation_if_not_valid'])
+
+    if not response.is_valid:
+        print(response.explanation_if_not_valid)
         return
 
-    if not response['commands']:
+    if not response.commands:
         print("No commands available")
         return
 
     options = [
-        questionary.Choice(cmd['command'], description=cmd['short_explanation'], value=cmd) for cmd in response['commands']
+        questionary.Choice(cmd.command, description=cmd.short_explanation, value=cmd) for cmd in response.commands
     ]
     options.append(questionary.Choice("Cancel"))
     options.append(questionary.Separator())
@@ -55,20 +56,20 @@ def show_options(words: str):
 
     if selected != "Cancel":
         print("")
-        if selected['dangerous_explanation']:
-            rprint(f"[red]⚠️ Warning: {selected['dangerous_explanation']}[/red]\n")
+        if selected.dangerous_explanation:
+            rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
         try:
-            pyperclip.copy(selected['command'])
+            pyperclip.copy(selected.command)
             rprint("[green]✓[/green] Copied to clipboard")
         except pyperclip.PyperclipException as e:
             rprint(
                 "[red]Could not copy to clipboard (see https://github.com/dtnewman/zev?tab=readme-ov-file#-dependencies)[/red]\n"
             )
             rprint("[cyan]Here is your command:[/cyan]")
-            print(selected['command'])
+            print(selected.command)
             if questionary.confirm("Would you like to run it?").ask():
-                print("Running command:", selected['command'])
-                run_command(selected['command'], shell=True)
+                print("Running command:", selected.command)
+                run_command(selected.command, shell=True)
 
 
 def run_no_prompt():
