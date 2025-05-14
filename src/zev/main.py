@@ -8,6 +8,7 @@ import questionary
 from rich import print as rprint
 from rich.console import Console
 
+from zev.config import config
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
 from zev.history import history
@@ -22,7 +23,8 @@ def setup():
 def show_options(words: str):
     context = get_env_context()
     console = Console()
-    with console.status("[bold blue]Thinking...", spinner="dots"):
+    rprint(f"")
+    with console.status(f"[bold blue]Thinking... [grey39](running query using {config.llm_provider} backend)", spinner="dots"):
         inference_provider = get_inference_provider()
         response = inference_provider.get_options(prompt=words, context=context)
         history.save_options(words, response)
