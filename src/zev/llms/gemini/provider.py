@@ -1,7 +1,10 @@
-from google import genai
+import json
+import os
+import urllib.request
+import urllib.error
 
 from zev.config import config
-from zev.constants import GEMINI_DEFAULT_MODEL, PROMPT
+from zev.constants import GEMINI_DEFAULT_MODEL, PROMPT, GEMINI_BASE_URL, GEMINI_RESPONSE_SCHEMA
 from zev.llms.inference_provider_base import InferenceProvider
 from zev.llms.types import OptionsResponse
 
@@ -11,22 +14,33 @@ class GeminiProvider(InferenceProvider):
         if not config.gemini_api_key:
             raise ValueError("GEMINI_API_KEY must be set. Try running `zev --setup`.")
 
-        self.client = genai.Client(api_key=config.gemini_api_key)
         self.model = config.gemini_model or GEMINI_DEFAULT_MODEL
+        self.api_url = f"{GEMINI_BASE_URL}/v1beta/models/{self.model}:generateContent?key={config.gemini_api_key}"
 
-    def get_options(self, prompt: str, context: str) -> OptionsResponse | None:
+    def get_options(self, prompt: str, context: str) -> None:
+        assembled_prompt = PROMPT.format(prompt=prompt, context=context)
+        headers = {"Content-Type": "application/json"}
+        body = json.dumps(
+            {
+                "contents": [{"parts": [{"text": assembled_prompt}]}],
+                "generationConfig": GEMINI_RESPONSE_SCHEMA,
+            }
+        ).encode("utf-8")
+        request = urllib.request.Request(self.api_url, data=body, headers=headers, method="POST")
+
         try:
-            assembled_prompt = PROMPT.format(prompt=prompt, context=context)
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=assembled_prompt,
-                config={
-                    "response_mime_type": "application/json",
-                    "response_schema": OptionsResponse,
-                },
-            )
-            return response.parsed
-        except genai.errors.ClientError as e:
-            print("Error:", e.details["error"]["message"])
+            with urllib.request.urlopen(request) as response:
+                data = json.loads(response.read().decode())
+                text_output = data["candidates"][0]["content"]["parts"][0]["text"]
+                parsed_json = json.loads(text_output)
+                return OptionsResponse(**parsed_json)
+        except urllib.error.HTTPError as e:
+            try:
+                error_data = json.loads(e.read().decode())
+                print("Error:", error_data["error"]["message"])
+            except Exception:
+                print("HTTP Error:", e.code)
             print("Note that to update settings, you can run `zev --setup`.")
-            return None
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+        return None
