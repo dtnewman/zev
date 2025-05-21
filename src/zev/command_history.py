@@ -99,4 +99,3 @@ class CommandHistory:
             return None
 
         show_options(commands)
-

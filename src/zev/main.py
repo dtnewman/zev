@@ -15,6 +15,7 @@ from zev.utils import get_env_context, get_input_string, show_help
 
 command_history = CommandHistory()
 
+
 def setup():
     run_setup()
 

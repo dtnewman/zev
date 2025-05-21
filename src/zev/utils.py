@@ -4,11 +4,14 @@ import platform
 import questionary
 
 
-CLI_STYLE = questionary.Style([
-    ("qmark", "#98c379"),
-    ("question", "#98c379"),
-    ("instruction", "italic #646464"),
-])
+CLI_STYLE = questionary.Style(
+    [
+        ("qmark", "#98c379"),
+        ("question", "#98c379"),
+        ("instruction", "italic #646464"),
+    ]
+)
+
 
 def get_input_string(
     field_name: str,
@@ -21,17 +24,15 @@ def get_input_string(
     base = f"{prompt_text} (default: {default})" if default else prompt_text
 
     while True:
-        value = (
-            questionary.text(
-                message=base,
-                default=default,
-                instruction=help_text or None,
-                style=CLI_STYLE,
-                validate=lambda t: bool(t) if required else True,
-            ).ask()
-        )
+        value = questionary.text(
+            message=base,
+            default=default,
+            instruction=help_text or None,
+            style=CLI_STYLE,
+            validate=lambda t: bool(t) if required else True,
+        ).ask()
 
-        if value is None:            # user pressed Ctrl-C / Ctrl-D
+        if value is None:  # user pressed Ctrl-C / Ctrl-D
             raise KeyboardInterrupt
         if value == "" and default:  # user just hit ↵
             return default
@@ -40,7 +41,6 @@ def get_input_string(
 
         # Required but empty ─ repeat
         print(f"{field_name} is required, please try again.")
-
 
 
 def get_env_context() -> str:
