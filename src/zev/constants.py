@@ -17,6 +17,39 @@ CONFIG_FILE_NAME = ".zevrc"
 HISTORY_FILE_NAME = ".zevhistory"
 
 
+TOOL_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "extract_shell_commands",
+        "description": "Extracts shell commands from text and provides safety metadata.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "command": {"type": "string"},
+                            "short_explanation": {"type": "string"},
+                            "is_dangerous": {"type": "boolean"},
+                            "dangerous_explanation": {"type": "string"}
+                        },
+                        "required": [
+                            "command",
+                            "is_dangerous",
+                            "short_explanation",
+                        ]
+                    }
+                },
+                "is_valid": {"type": "boolean"},
+                "explanation_if_not_valid": {"type": "string"}
+            },
+            "required": ["commands", "is_valid"]
+        }
+    }
+}
+
 PROMPT = """
 You are a helpful assistant that helps users remember commands for the terminal. You 
 will return a JSON object with a list of at most three options.

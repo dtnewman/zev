@@ -3,40 +3,13 @@ import urllib.error
 import urllib.request
 
 from zev.config import config
-from zev.constants import GEMINI_BASE_URL, GEMINI_DEFAULT_MODEL, PROMPT
+from zev.constants import GEMINI_BASE_URL, GEMINI_DEFAULT_MODEL, PROMPT,TOOL_SCHEMA
 from zev.llms.inference_provider_base import InferenceProvider
 from zev.llms.types import OptionsResponse
 
 GEMINI_RESPONSE_SCHEMA = {
     "response_mime_type": "application/json",
-    "response_schema": {
-        "type": "OBJECT",
-        "properties": {
-            "commands": {
-                "type": "ARRAY",
-                "items": {
-                    "type": "OBJECT",
-                    "properties": {
-                        "command": {"type": "STRING"},
-                        "short_explanation": {"type": "STRING"},
-                        "is_dangerous": {"type": "BOOLEAN"},
-                        "dangerous_explanation": {"type": "STRING"},
-                    },
-                    "required": [
-                        "command",
-                        "short_explanation",
-                        "is_dangerous",
-                    ],
-                },
-            },
-            "is_valid": {"type": "BOOLEAN"},
-            "explanation_if_not_valid": {"type": "STRING"},
-        },
-        "required": [
-            "commands",
-            "is_valid",
-        ],
-    },
+    "response_schema": TOOL_SCHEMA["function"]["parameters"]
 }
 
 
