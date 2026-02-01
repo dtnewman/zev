@@ -21,6 +21,10 @@ class Config:
     def openai_model(self):
         return self.vals.get("OPENAI_MODEL")
 
+    @property
+    def openai_base_url(self):
+        return self.vals.get("OPENAI_BASE_URL")
+
     # Ollama
     @property
     def ollama_base_url(self):
