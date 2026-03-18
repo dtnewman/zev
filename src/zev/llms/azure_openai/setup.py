@@ -13,8 +13,8 @@ questions = (
     ),
     SetupQuestionText(
         name="AZURE_OPENAI_DEPLOYMENT",
-        prompt="Azure OpenAI deployment name (e.g. gpt-4, gpt-4o, etc):",
-        default="gpt-4o",
+        prompt="Azure OpenAI deployment name (e.g. gpt-4o, gpt-5.4, gpt-5.4-mini, etc):",
+        default="gpt-5.4-mini",
     ),
     SetupQuestionText(
         name="AZURE_OPENAI_API_VERSION",

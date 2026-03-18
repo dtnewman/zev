@@ -15,14 +15,14 @@ questions = (
         prompt="Choose which model you would like to default to:",
         options=[
             SetupQuestionSelectOption(
-                value="gemini-1.5-flash",
-                label="gemini-1.5-flash",
-                description="Low latency, good for summarization, good performance",
+                value="gemini-3-flash-preview",
+                label="gemini-3-flash-preview",
+                description="Frontier-class performance at a fraction of the cost",
             ),
             SetupQuestionSelectOption(
-                value="gemini-2.0-flash",
-                label="gemini-2.0-flash",
-                description="Long context, good performance",
+                value="gemini-3.1-flash-lite-preview",
+                label="gemini-3.1-flash-lite-preview",
+                description="Fastest and most budget-friendly option",
             ),
         ],
     ),

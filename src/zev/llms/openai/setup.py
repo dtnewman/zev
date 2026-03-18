@@ -15,14 +15,19 @@ questions = (
         prompt="Choose which model you would like to default to:",
         options=[
             SetupQuestionSelectOption(
-                value="gpt-4o-mini",
-                label="gpt-4o-mini",
-                description="Good performance and speed, and cheaper",
+                value="gpt-5.4-mini",
+                label="gpt-5.4-mini",
+                description="Fast and cost-efficient, great for most tasks",
             ),
             SetupQuestionSelectOption(
-                value="gpt-4o",
-                label="gpt-4o",
-                description="More expensive and slower, but better performance",
+                value="gpt-5.4",
+                label="gpt-5.4",
+                description="Flagship model for complex reasoning and coding",
+            ),
+            SetupQuestionSelectOption(
+                value="gpt-5.4-nano",
+                label="gpt-5.4-nano",
+                description="Cheapest option, best for simple high-volume tasks",
             ),
         ],
     ),
