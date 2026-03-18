@@ -11,6 +11,7 @@ from zev.config import config
 from zev.config.setup import run_setup
 from zev.constants import CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
+from zev.update_check import check_for_updates_in_background, get_update_message
 from zev.utils import get_env_context, get_input_string, show_help
 
 command_history = CommandHistory()
@@ -84,6 +85,12 @@ def handle_special_case(args):
 
 
 def app():
+    check_for_updates_in_background()
+
+    update_msg = get_update_message()
+    if update_msg:
+        rprint(update_msg)
+
     # check if .zevrc exists or if setting up again
     config_path = Path.home() / CONFIG_FILE_NAME
     args = [arg.strip() for arg in sys.argv[1:]]
