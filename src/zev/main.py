@@ -25,10 +25,11 @@ def get_options(words: str):
     context = get_env_context()
     console = Console()
     rprint(f"")
+    inference_provider = get_inference_provider()
     with console.status(
-        f"[bold blue]Thinking... [grey39](running query using {config.llm_provider} backend)", spinner="dots"
+        f"[bold blue]Thinking... [grey39](running query using {inference_provider.model} via {config.llm_provider} backend)",
+        spinner="dots",
     ):
-        inference_provider = get_inference_provider()
         response = inference_provider.get_options(prompt=words, context=context)
         command_history.save_options(words, response)
 
