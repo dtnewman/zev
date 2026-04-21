@@ -36,7 +36,11 @@ jobs:
       - name: Install poet and zev
         run: |
           pip install homebrew-pypi-poet
-          pip install "zev==${{ steps.version.outputs.version }}"
+          for i in $(seq 1 10); do
+            pip install "zev==${{ steps.version.outputs.version }}" && break
+            echo "Attempt $i failed, retrying in 30s..."
+            sleep 30
+          done
 
       - name: Generate formula
         run: |
