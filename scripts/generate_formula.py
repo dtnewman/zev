@@ -22,6 +22,10 @@ ARM64_TAG = "macosx_11_0_arm64"
 X86_64_TAG = "macosx_10_12_x86_64"
 
 
+def normalize_package_name(name: str) -> str:
+    return name.replace("_", "-").lower()
+
+
 def get_pypi_tarball(version: str) -> tuple[str, str]:
     url = f"https://pypi.org/pypi/zev/{version}/json"
     with urllib.request.urlopen(url) as resp:
@@ -34,7 +38,7 @@ def get_pypi_tarball(version: str) -> tuple[str, str]:
 
 def get_wheel_urls(package: str, version: str) -> dict[str, tuple[str, str]]:
     """Return {platform_tag: (url, sha256)} for cp312 macOS wheels of a package."""
-    url = f"https://pypi.org/pypi/{package}/{version}/json"
+    url = f"https://pypi.org/pypi/{normalize_package_name(package)}/{version}/json"
     with urllib.request.urlopen(url) as resp:
         data = json.load(resp)
     result: dict[str, tuple[str, str]] = {}
@@ -92,8 +96,8 @@ def get_poet_resources() -> str:
     # Drop the zev package itself
     all_resources = [r for r in all_resources if r["name"] != "zev"]
 
-    native = [r for r in all_resources if r["name"] in NATIVE_PACKAGES]
-    pure_python = [r for r in all_resources if r["name"] not in NATIVE_PACKAGES]
+    native = [r for r in all_resources if normalize_package_name(r["name"]) in NATIVE_PACKAGES]
+    pure_python = [r for r in all_resources if normalize_package_name(r["name"]) not in NATIVE_PACKAGES]
 
     sections: list[str] = []
 
