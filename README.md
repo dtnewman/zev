@@ -9,6 +9,15 @@ Zev helps you remember (or discover) terminal commands using natural language.
 
 ## 🔧 Installation
 
+### Homebrew (macOS/Linux)
+
+```bash
+brew tap dtnewman/zev
+brew install zev
+```
+
+### pip
+
 ```bash
 pip install zev
 ```

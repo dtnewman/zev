@@ -1,0 +1,58 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'PyPI version to package (e.g. 0.10.2)'
+        required: true
+
+jobs:
+  update-tap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ inputs.version }}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install poet and zev
+        run: |
+          pip install homebrew-pypi-poet
+          pip install "zev==${{ steps.version.outputs.version }}"
+
+      - name: Generate formula
+        run: |
+          python scripts/generate_formula.py "${{ steps.version.outputs.version }}" > Formula/zev.rb
+          cat Formula/zev.rb
+
+      - name: Push to homebrew-zev tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/dtnewman/homebrew-zev.git" tap
+          mkdir -p tap/Formula
+          cp Formula/zev.rb tap/Formula/zev.rb
+          cd tap
+          git add Formula/zev.rb
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update zev to ${{ steps.version.outputs.version }}"
+          git push
