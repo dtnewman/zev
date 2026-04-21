@@ -9,14 +9,14 @@ Zev helps you remember (or discover) terminal commands using natural language.
 
 ## 🔧 Installation
 
-### Homebrew (macOS/Linux)
+### Homebrew (macOS)
 
 ```bash
 brew tap dtnewman/zev
 brew install zev
 ```
 
-### pip
+### pipx (linux)
 
 ```bash
 pipx install zev
