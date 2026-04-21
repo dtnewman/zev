@@ -73,7 +73,6 @@ class Zev < Formula
   license "MIT"
 
   depends_on "python@3.12"
-  depends_on "rust" => :build
 
 {indent(resources)}
 
