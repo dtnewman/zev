@@ -1,11 +1,9 @@
 name: Update Homebrew Tap
 
 on:
-  release:
-    types: [published]
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["Publish to PyPI"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       version:
@@ -15,6 +13,7 @@ on:
 jobs:
   update-tap:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,11 +25,8 @@ jobs:
       - name: Resolve version
         id: version
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            VERSION="${{ github.event.release.tag_name }}"
-            VERSION="${VERSION#v}"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            VERSION="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            VERSION="${{ github.event.workflow_run.head_branch }}"
             VERSION="${VERSION#v}"
           else
             VERSION="${{ inputs.version }}"
