@@ -159,11 +159,7 @@ class Zev < Formula
 {indent(resources)}
 
   def install
-    venv = virtualenv_create(libexec, "python@3.12")
-    resources.each(&:fetch)
-    system libexec/"bin/pip", "install", "--no-deps", *resources.map(&:cached_download)
-    system libexec/"bin/pip", "install", "--no-deps", buildpath
-    bin.install_symlink libexec/"bin/zev"
+    virtualenv_install_with_resources
   end
 
   test do
