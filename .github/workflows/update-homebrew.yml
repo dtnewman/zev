@@ -16,6 +16,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -25,11 +27,10 @@ jobs:
       - name: Resolve version
         id: version
         run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            VERSION="${{ github.event.workflow_run.head_branch }}"
-            VERSION="${VERSION#v}"
-          else
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             VERSION="${{ inputs.version }}"
+          else
+            VERSION=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['version'])")
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
