@@ -158,15 +158,22 @@ class Zev < Formula
     sha256 "cdc4e4262d6ef9a1a57e018384cbeb1208d8abbc64176027e2c2455c81313159"
   end
 
+  def install_resource(venv, resource)
+    if resource.url&.end_with?(".whl")
+      wheel_dir = buildpath/"homebrew-wheels"
+      wheel_dir.mkpath
+      wheel_name = resource.url.to_s.split("/").last
+      wheel_path = wheel_dir/wheel_name
+      FileUtils.cp(resource.cached_download, wheel_path)
+      venv.pip_install wheel_path
+    else
+      venv.pip_install resource
+    end
+  end
+
   def install
     venv = virtualenv_create(libexec, "python3.12")
-    resources.each do |r|
-      if r.url&.end_with?(".whl")
-        venv.pip_install r.cached_download
-      else
-        venv.pip_install r
-      end
-    end
+    resources.each { |r| install_resource(venv, r) }
     venv.pip_install_and_link buildpath
   end
 
