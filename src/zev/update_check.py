@@ -1,12 +1,14 @@
 import json
+import sys
 import threading
 import time
 from importlib.metadata import version
-from pathlib import Path
 from urllib.error import URLError
 from urllib.request import urlopen
 
-CACHE_FILE = Path.home() / ".zev_update_cache"
+from zev.paths import get_app_dir
+
+CACHE_FILE = get_app_dir() / "update_cache"
 CHECK_INTERVAL = 86400  # 24 hours
 PYPI_URL = "https://pypi.org/pypi/zev/json"
 
@@ -51,6 +53,10 @@ def _read_cache() -> str | None:
         return None
 
 
+def _is_homebrew_install() -> bool:
+    return "Cellar" in sys.executable
+
+
 def get_update_message() -> str | None:
     """Return a Rich-formatted update notice if a newer version is cached, else None."""
     try:
@@ -60,9 +66,13 @@ def get_update_message() -> str | None:
 
     latest = _read_cache()
     if latest and _parse_version(latest) > _parse_version(current):
+        if _is_homebrew_install():
+            upgrade_cmd = "brew upgrade zev"
+        else:
+            upgrade_cmd = "pipx upgrade zev"
         return (
             f"[yellow]A new version of zev is available: [bold]{latest}[/bold] "
-            f"(you have {current}). Run [bold]pip install --upgrade zev[/bold] to update.[/yellow]"
+            f"(you have {current}). Run [bold]{upgrade_cmd}[/bold] to update.[/yellow]"
         )
     return None
 

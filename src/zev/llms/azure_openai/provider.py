@@ -33,7 +33,7 @@ class AzureOpenAIProvider(OpenAIProvider):
                     get_bearer_token_provider,
                 )
             except ImportError as exc:
-                raise ImportError("Missing required Azure packages. Run `pip install zev[azure]`") from exc
+                raise ImportError("Missing required Azure packages. Run `pipx install zev[azure]`") from exc
             token_provider = get_bearer_token_provider(
                 DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
             )

@@ -1,12 +1,11 @@
-from pathlib import Path
 from typing import Optional
 
 import questionary
 from pydantic import BaseModel
 
 from zev.command_selector import show_options
-from zev.constants import HISTORY_FILE_NAME
 from zev.llms.types import OptionsResponse
+from zev.paths import get_history_path
 
 
 class CommandHistoryEntry(BaseModel):
@@ -16,7 +15,7 @@ class CommandHistoryEntry(BaseModel):
 
 class CommandHistory:
     def __init__(self) -> None:
-        self.path = Path.home() / HISTORY_FILE_NAME
+        self.path = get_history_path()
         self.max_entries = 100
         self.path.touch(exist_ok=True)
         self.encoding = "utf-8"

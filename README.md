@@ -19,7 +19,7 @@ brew install zev
 ### pip
 
 ```bash
-pip install zev
+pipx install zev
 ```
 
 - **Note:** This project runs on top of LLM APIs like OpenAI, Google's Gemini, or [Ollama](https://ollama.com/).
@@ -114,7 +114,7 @@ To use Azure OpenAI, you’ll need access to an [Azure OpenAI](https://azure.mic
 
 1. Create a deployment of the model you want to use (e.g., `gpt-5.4`, `gpt-5.4-mini` etc.).
 
-1. Install required Azure depedencies with `pip install zev[azure]`.
+1. Install required Azure depedencies with `pipx install zev[azure]`.
 
 1. Run `zev --setup` and put in the proper settings. For example:
 

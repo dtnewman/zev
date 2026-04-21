@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Dict
 
 import questionary
@@ -11,6 +10,7 @@ from zev.config.types import (
     SetupQuestionText,
 )
 from zev.constants import LLMProviders
+from zev.paths import get_config_path
 from zev.llms.azure_openai.setup import questions as azure_questions
 from zev.llms.gemini.setup import questions as gemini_questions
 from zev.llms.ollama.setup import questions as ollama_questions
@@ -73,7 +73,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
 
 
 def run_setup():
-    config_path = Path.home() / ".zevrc"
+    config_path = get_config_path()
     answers = dotenv_values(config_path)  # load in current values and then override as necessary
     for question in setup_questions:
         answers.update(prompt_question(question, answers))

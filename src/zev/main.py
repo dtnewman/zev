@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 import dotenv
 from rich import print as rprint
@@ -9,8 +8,8 @@ from zev.command_history import CommandHistory
 from zev.command_selector import show_options
 from zev.config import config
 from zev.config.setup import run_setup
-from zev.constants import CONFIG_FILE_NAME
 from zev.llms.llm import get_inference_provider
+from zev.paths import get_config_path, migrate_legacy_files
 from zev.update_check import check_for_updates_in_background, get_update_message
 from zev.utils import get_env_context, get_input_string, show_help
 
@@ -71,7 +70,8 @@ def handle_special_case(args):
         return True
 
     if command == "--version" or command == "-v":
-        print("zev version: 0.8.1")
+        from importlib.metadata import version
+        print(f"zev version: {version('zev')}")
         return True
 
     if command == "--recent" or command == "-r":
@@ -86,14 +86,14 @@ def handle_special_case(args):
 
 
 def app():
+    migrate_legacy_files()
     check_for_updates_in_background()
 
     update_msg = get_update_message()
     if update_msg:
         rprint(update_msg)
 
-    # check if .zevrc exists or if setting up again
-    config_path = Path.home() / CONFIG_FILE_NAME
+    config_path = get_config_path()
     args = [arg.strip() for arg in sys.argv[1:]]
 
     if not config_path.exists():

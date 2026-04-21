@@ -1,11 +1,11 @@
-from pathlib import Path
-
 from dotenv import dotenv_values
+
+from zev.paths import get_config_path
 
 
 class Config:
     def __init__(self):
-        self.config_path = Path.home() / ".zevrc"
+        self.config_path = get_config_path()
         self.vals = dotenv_values(self.config_path)
 
     @property
