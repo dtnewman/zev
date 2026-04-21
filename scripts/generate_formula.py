@@ -165,7 +165,7 @@ class Zev < Formula
       wheel_name = resource.url.to_s.split("/").last
       wheel_path = wheel_dir/wheel_name
       FileUtils.cp(resource.cached_download, wheel_path)
-      system "python3.12", "-m", "pip", "--python=\#{venv.root}/bin/python", "install",
+      system "python3.12", "-m", "pip", "--python=#{{venv.root}}/bin/python", "install",
              "--verbose", "--no-deps", "--ignore-installed", "--no-compile", wheel_path
     else
       venv.pip_install resource
