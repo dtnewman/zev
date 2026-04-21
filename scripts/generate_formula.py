@@ -157,6 +157,7 @@ class Zev < Formula
   url "{tarball_url}"
   sha256 "{sha256}"
   license "MIT"
+  preserve_rpath
 
   depends_on "python@3.12"
 

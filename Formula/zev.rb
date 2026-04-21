@@ -6,6 +6,7 @@ class Zev < Formula
   url "https://files.pythonhosted.org/packages/5e/b1/64c7af49903100fee4e68a9ef43ca4dca2eedd3e51eeda65097d47b7dec8/zev-0.10.2.tar.gz"
   sha256 "16a1d840f74806c6a5b53e9de7105b6133d694dd57e74539808454482d02a9a1"
   license "MIT"
+  preserve_rpath
 
   depends_on "python@3.12"
 
