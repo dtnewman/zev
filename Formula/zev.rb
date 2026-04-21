@@ -159,7 +159,15 @@ class Zev < Formula
   end
 
   def install
-    virtualenv_install_with_resources
+    venv = virtualenv_create(libexec, "python3.12")
+    resources.each do |r|
+      if r.url&.end_with?(".whl")
+        venv.pip_install r.cached_download
+      else
+        venv.pip_install r
+      end
+    end
+    venv.pip_install_and_link buildpath
   end
 
   test do
