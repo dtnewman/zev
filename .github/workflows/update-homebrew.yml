@@ -35,7 +35,7 @@ jobs:
 
       - name: Install poet and zev
         run: |
-          pip install homebrew-pypi-poet
+          pip install setuptools homebrew-pypi-poet
           for i in $(seq 1 10); do
             pip install "zev==${{ steps.version.outputs.version }}" && break
             echo "Attempt $i failed, retrying in 30s..."
