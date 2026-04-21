@@ -6,6 +6,9 @@ from zev.paths import get_config_path
 class Config:
     def __init__(self):
         self.config_path = get_config_path()
+        self.reload()
+
+    def reload(self):
         self.vals = dotenv_values(self.config_path)
 
     @property

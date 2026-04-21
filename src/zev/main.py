@@ -98,6 +98,7 @@ def app():
 
     if not config_path.exists():
         run_setup()
+        config.reload()
         print("Setup complete...\n")
         if len(args) == 1 and args[0] == "--setup":
             return
@@ -106,6 +107,7 @@ def app():
         return
 
     dotenv.load_dotenv(config_path, override=True)
+    config.reload()
 
     if not args:
         run_no_prompt()
