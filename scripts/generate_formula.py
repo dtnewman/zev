@@ -10,9 +10,16 @@ Usage:
 """
 
 import json
+import re
 import subprocess
 import sys
 import urllib.request
+
+
+# Packages that require native compilation (Rust/C) — use binary wheels to avoid toolchain deps.
+NATIVE_PACKAGES = {"jiter", "pydantic-core"}
+ARM64_TAG = "macosx_11_0_arm64"
+X86_64_TAG = "macosx_10_12_x86_64"
 
 
 def get_pypi_tarball(version: str) -> tuple[str, str]:
@@ -25,6 +32,53 @@ def get_pypi_tarball(version: str) -> tuple[str, str]:
     raise RuntimeError(f"No source tarball found for zev {version}")
 
 
+def get_wheel_urls(package: str, version: str) -> dict[str, tuple[str, str]]:
+    """Return {platform_tag: (url, sha256)} for cp312 macOS wheels of a package."""
+    url = f"https://pypi.org/pypi/{package}/{version}/json"
+    with urllib.request.urlopen(url) as resp:
+        data = json.load(resp)
+    result: dict[str, tuple[str, str]] = {}
+    for f in data["urls"]:
+        fn = f["filename"]
+        if not fn.endswith(".whl") or "cp312" not in fn:
+            continue
+        for tag in (ARM64_TAG, X86_64_TAG):
+            if tag in fn:
+                result[tag] = (f["url"], f["digests"]["sha256"])
+    return result
+
+
+def parse_poet_output(output: str) -> list[dict]:
+    """Parse poet stdout into a list of resource dicts with normalized (0-indent) block text."""
+    resources = []
+    lines = output.splitlines()
+    i = 0
+    while i < len(lines):
+        m = re.match(r'(\s*)resource "([^"]+)" do\s*$', lines[i])
+        if m:
+            leading = m.group(1)
+            name = m.group(2)
+            block_lines: list[str] = []
+            while i < len(lines):
+                line = lines[i]
+                # Strip the common leading indent introduced by poet
+                normalized = line[len(leading):] if line.startswith(leading) else line.lstrip()
+                block_lines.append(normalized)
+                if line.strip() == "end":
+                    i += 1
+                    break
+                i += 1
+            block_str = "\n".join(block_lines)
+            url_m = re.search(r'url "([^"]+)"', block_str)
+            url = url_m.group(1) if url_m else ""
+            ver_m = re.search(r'[/_-](\d+\.\d+[\d.]*)(?:\.tar\.gz|[-_.])', url)
+            version = ver_m.group(1) if ver_m else ""
+            resources.append({"name": name, "url": url, "version": version, "block": block_str})
+        else:
+            i += 1
+    return resources
+
+
 def get_poet_resources() -> str:
     result = subprocess.run(
         [sys.executable, "-m", "poet", "zev"],
@@ -33,24 +87,52 @@ def get_poet_resources() -> str:
     )
     if result.returncode != 0:
         raise RuntimeError(f"poet failed: {result.stderr}")
-    # poet outputs resource blocks including one for zev itself — drop it
-    lines = result.stdout.splitlines()
-    filtered: list[str] = []
-    skip = False
-    for line in lines:
-        if line.strip().startswith('resource "zev"'):
-            skip = True
-        if skip:
-            if line.strip() == "end":
-                skip = False
-            continue
-        filtered.append(line)
-    # strip leading/trailing blank lines
-    while filtered and not filtered[0].strip():
-        filtered.pop(0)
-    while filtered and not filtered[-1].strip():
-        filtered.pop()
-    return "\n".join(filtered)
+
+    all_resources = parse_poet_output(result.stdout)
+    # Drop the zev package itself
+    all_resources = [r for r in all_resources if r["name"] != "zev"]
+
+    native = [r for r in all_resources if r["name"] in NATIVE_PACKAGES]
+    pure_python = [r for r in all_resources if r["name"] not in NATIVE_PACKAGES]
+
+    sections: list[str] = []
+
+    if native:
+        # Fetch binary wheel URLs once per native package
+        wheel_cache: dict[str, dict[str, tuple[str, str]]] = {}
+        for res in native:
+            wheel_cache[res["name"]] = get_wheel_urls(res["name"], res["version"])
+
+        def make_arch_block(arch_name: str, platform_tag: str) -> str:
+            lines = [f"on_{arch_name} do"]
+            for i, res in enumerate(native):
+                wheels = wheel_cache[res["name"]]
+                if platform_tag not in wheels:
+                    raise RuntimeError(
+                        f"No cp312 wheel for {res['name']} {res['version']} on {platform_tag}"
+                    )
+                whl_url, whl_sha = wheels[platform_tag]
+                lines.append(f'  resource "{res["name"]}" do')
+                lines.append(f'    url "{whl_url}"')
+                lines.append(f'    sha256 "{whl_sha}"')
+                lines.append("  end")
+                if i < len(native) - 1:
+                    lines.append("")
+            lines.append("end")
+            return "\n".join(lines)
+
+        sections.append(make_arch_block("arm", ARM64_TAG))
+        sections.append(make_arch_block("intel", X86_64_TAG))
+
+    for res in pure_python:
+        sections.append(res["block"])
+
+    while sections and not sections[0].strip():
+        sections.pop(0)
+    while sections and not sections[-1].strip():
+        sections.pop()
+
+    return "\n\n".join(sections)
 
 
 def indent(text: str, spaces: int = 2) -> str:
@@ -77,7 +159,11 @@ class Zev < Formula
 {indent(resources)}
 
   def install
-    virtualenv_install_with_resources
+    venv = virtualenv_create(libexec, "python@3.12")
+    resources.each(&:fetch)
+    system libexec/"bin/pip", "install", "--no-deps", *resources.map(&:cached_download)
+    system libexec/"bin/pip", "install", "--no-deps", buildpath
+    bin.install_symlink libexec/"bin/zev"
   end
 
   test do
