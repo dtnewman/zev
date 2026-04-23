@@ -90,6 +90,18 @@ zev --setup
 
 To use OpenAI, you need an OpenAI account and a subscription. You can create an API key on [this page](https://platform.openai.com/settings/organization/api-keys).
 
+#### Using OpenAI-Compatible APIs (OpenRouter, etc.)
+
+Zev supports OpenAI-compatible APIs like [OpenRouter](https://openrouter.ai/), which provides access to many models including some with free tiers. During setup, you can specify a custom base URL:
+
+```bash
+? Your OPENAI api key: sk-or-v1-xxxxx  # Your OpenRouter API key
+? Choose which model you would like to default to: gpt-4o-mini
+? Custom API base URL: https://openrouter.ai/api/v1
+```
+
+Leave the custom base URL empty to use the default OpenAI API.
+
 ### Google Gemini (Free)
 
 To use Google's Gemini models, you need a Google AI Studio account. You can create a Gemini API key in [Google AI Studio](https://aistudio.google.com/).

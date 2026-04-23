@@ -31,4 +31,9 @@ questions = (
             ),
         ],
     ),
+    SetupQuestionText(
+        name="OPENAI_BASE_URL",
+        prompt="Custom API base URL (leave empty for default OpenAI API, or enter URL for OpenRouter/other compatible APIs):",
+        default="",
+    ),
 )
