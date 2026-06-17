@@ -13,6 +13,7 @@ Zev helps you remember (or discover) terminal commands using natural language.
 
 ```bash
 brew tap dtnewman/zev
+brew trust dtnewman/zev
 brew install zev
 ```
 
