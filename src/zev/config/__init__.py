@@ -59,5 +59,14 @@ class Config:
     def azure_openai_api_version(self):
         return self.vals.get("AZURE_OPENAI_API_VERSION")
 
+    # Anthropic
+    @property
+    def anthropic_api_key(self):
+        return self.vals.get("ANTHROPIC_API_KEY")
+
+    @property
+    def anthropic_model(self):
+        return self.vals.get("ANTHROPIC_MODEL")
+
 
 config = Config()

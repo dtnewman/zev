@@ -80,6 +80,7 @@ zev 'show uncommitted changes in git'
 - Google Gemini
 - Ollama
 - Azure OpenAI
+- Anthropic (Claude)
 
 You can update your API keys and provider settings by running:
 
@@ -94,6 +95,14 @@ To use OpenAI, you need an OpenAI account and a subscription. You can create an 
 ### Google Gemini (Free)
 
 To use Google's Gemini models, you need a Google AI Studio account. You can create a Gemini API key in [Google AI Studio](https://aistudio.google.com/).
+
+### Anthropic (Claude)
+
+To use Claude models, you need an Anthropic API key, which you can create in the [Claude Console](https://platform.claude.com/settings/keys).
+
+1. Install the Anthropic dependency with `pipx install zev[anthropic]` (requires Python 3.10+).
+
+1. Run `zev --setup`, pick **Anthropic**, enter your API key, and choose a model.
 
 ## 🐪 Using with Ollama
 

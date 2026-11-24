@@ -3,14 +3,16 @@ class LLMProviders:
     OLLAMA = "ollama"
     GEMINI = "gemini"
     AZURE_OPENAI = "azure_openai"
+    ANTHROPIC = "anthropic"
 
 
 DEFAULT_PROVIDER = LLMProviders.OPENAI
 
 # Default model names for each provider
-OPENAI_DEFAULT_MODEL = "gpt-5.4-mini"
-GEMINI_DEFAULT_MODEL = "gemini-3-flash-preview"
+OPENAI_DEFAULT_MODEL = "gpt-6-luna"
+GEMINI_DEFAULT_MODEL = "gemini-3.8-flash"
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com"
+ANTHROPIC_DEFAULT_MODEL = "claude-opus-5-5"
 
 OPENAI_BASE_URL = "https://api.openai.com/v1"
 

@@ -24,5 +24,10 @@ def get_inference_provider() -> InferenceProvider:
         from zev.llms.azure_openai.provider import AzureOpenAIProvider
 
         return AzureOpenAIProvider()
+    elif config.llm_provider == LLMProviders.ANTHROPIC:
+        # pylint: disable=import-outside-toplevel
+        from zev.llms.anthropic.provider import AnthropicProvider
+
+        return AnthropicProvider()
     else:
         raise ValueError(f"Invalid LLM provider: {config.llm_provider}")
