@@ -95,6 +95,9 @@ def get_poet_resources() -> str:
     all_resources = parse_poet_output(result.stdout)
     # Drop the zev package itself
     all_resources = [r for r in all_resources if r["name"] != "zev"]
+    if not all_resources:
+        # poet only warns (exit 0) when zev isn't installed, yielding a formula with no dependencies.
+        raise RuntimeError(f"poet found no dependency resources for zev; is it installed?\n{result.stderr}")
 
     native = [r for r in all_resources if normalize_package_name(r["name"]) in NATIVE_PACKAGES]
     pure_python = [r for r in all_resources if normalize_package_name(r["name"]) not in NATIVE_PACKAGES]
