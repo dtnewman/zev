@@ -38,10 +38,11 @@ jobs:
         run: |
           pip install setuptools homebrew-pypi-poet
           for i in $(seq 1 10); do
-            pip install "zev==${{ steps.version.outputs.version }}" && break
+            pip install --no-cache-dir "zev==${{ steps.version.outputs.version }}" && break
             echo "Attempt $i failed, retrying in 30s..."
             sleep 30
           done
+          pip show zev > /dev/null  # fail the job if every attempt failed
 
       - name: Generate formula
         run: |
