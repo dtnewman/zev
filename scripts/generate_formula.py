@@ -15,7 +15,6 @@ import subprocess
 import sys
 import urllib.request
 
-
 # Packages that require native compilation (Rust/C) — use binary wheels to avoid toolchain deps.
 NATIVE_PACKAGES = {"jiter", "pydantic-core"}
 ARM64_TAG = "macosx_11_0_arm64"

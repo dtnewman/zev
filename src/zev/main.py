@@ -1,6 +1,5 @@
 import sys
 
-import dotenv
 from rich import print as rprint
 from rich.console import Console
 
@@ -30,10 +29,11 @@ def get_options(words: str):
         spinner="dots",
     ):
         response = inference_provider.get_options(prompt=words, context=context)
-        command_history.save_options(words, response)
 
     if response is None:
         return
+
+    command_history.save_options(words, response)
 
     if not response.is_valid:
         print(response.explanation_if_not_valid)
@@ -106,7 +106,6 @@ def app():
     if handle_special_case(args):
         return
 
-    dotenv.load_dotenv(config_path, override=True)
     config.reload()
 
     if not args:

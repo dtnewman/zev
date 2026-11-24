@@ -1,9 +1,9 @@
 from subprocess import run as run_command
 
-import pyperclip
 import questionary
 from rich import print as rprint
 
+from zev import clipboard
 from zev.llms.types import Command
 
 
@@ -42,9 +42,9 @@ def handle_selected_option(selected):
         if selected.dangerous_explanation:
             rprint(f"[red]⚠️ Warning: {selected.dangerous_explanation}[/red]\n")
         try:
-            pyperclip.copy(selected.command)
+            clipboard.copy(selected.command)
             rprint("[green]✓[/green] Copied to clipboard")
-        except pyperclip.PyperclipException as e:
+        except clipboard.ClipboardError:
             rprint(
                 "[red]Could not copy to clipboard (see https://github.com/dtnewman/zev?tab=readme-ov-file#-dependencies)[/red]\n"
             )

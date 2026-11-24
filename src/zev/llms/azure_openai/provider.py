@@ -1,7 +1,9 @@
-from openai import AzureOpenAI
+from urllib.parse import quote
 
 from zev.config import config
 from zev.llms.openai.provider import OpenAIProvider
+
+AZURE_TOKEN_SCOPE = "https://cognitiveservices.azure.com/.default"
 
 
 class AzureOpenAIProvider(OpenAIProvider):
@@ -18,29 +20,24 @@ class AzureOpenAIProvider(OpenAIProvider):
             if not value:
                 raise ValueError(f"{var} must be set. Run `zev --setup`.")
 
-        azure_openai_endpoint = f"https://{config.azure_openai_account_name}.openai.azure.com/"
+        self.url = (
+            f"https://{config.azure_openai_account_name}.openai.azure.com/openai/deployments/"
+            f"{quote(config.azure_openai_deployment)}/chat/completions"
+            f"?api-version={quote(config.azure_openai_api_version)}"
+        )
+        self.model = config.azure_openai_deployment
+        self.api_key = config.azure_openai_api_key
+        self.credential = None
 
-        if config.azure_openai_api_key:
-            self.client = AzureOpenAI(
-                api_key=config.azure_openai_api_key,
-                azure_endpoint=azure_openai_endpoint,
-                api_version=config.azure_openai_api_version,
-            )
-        else:
+        if not self.api_key:
             try:
-                from azure.identity import (  # pylint: disable=import-outside-toplevel
-                    DefaultAzureCredential,
-                    get_bearer_token_provider,
-                )
+                from azure.identity import DefaultAzureCredential  # pylint: disable=import-outside-toplevel
             except ImportError as exc:
                 raise ImportError("Missing required Azure packages. Run `pipx install zev[azure]`") from exc
-            token_provider = get_bearer_token_provider(
-                DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-            )
-            self.client = AzureOpenAI(
-                azure_endpoint=azure_openai_endpoint,
-                api_version=config.azure_openai_api_version,
-                azure_ad_token_provider=token_provider,
-            )
+            self.credential = DefaultAzureCredential()
 
-        self.model = config.azure_openai_deployment
+    def get_headers(self) -> dict:
+        if self.api_key:
+            return {"api-key": self.api_key}
+        token = self.credential.get_token(AZURE_TOKEN_SCOPE).token
+        return {"Authorization": f"Bearer {token}"}

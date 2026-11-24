@@ -1,27 +1,21 @@
 [project]
 name = "zev"
-version = "0.12.0"
+version = "0.12.1"
 description = "Lookup CLI commands easily"
 readme = "README.md"
 dependencies = [
-  "openai>=1.72.0",
-  "platformdirs>=4.0.0",
-  "pydantic>=2.10.6",
-  "pyperclip>=1.9.0",
-  "python-dotenv>=1.0.1",
-  "questionary>=2.1.0",
-  "rich>=13.9.4",
+  "questionary>=2.1.1",
+  "rich>=15.0.0",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 urls = { Repository = "https://github.com/dtnewman/zev" }
 
 [project.scripts]
 zev = "zev.main:app"
 
 [project.optional-dependencies]
-dev = ["ruff>=0.11.2", "isort>=5.13.2"]
-azure = ["azure-identity>=1.20.0"]
-anthropic = ["anthropic>=2.0.0; python_version >= '3.10'"]
+dev = ["ruff>=0.17.6", "isort>=9.0.2"]
+azure = ["azure-identity>=1.27.0"]
 
 [build-system]
 requires = ["setuptools>=61.0"]

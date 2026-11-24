@@ -1,8 +1,8 @@
 from typing import Dict
 
 import questionary
-from dotenv import dotenv_values
 
+from zev.config import read_config_file
 from zev.config.types import (
     SetupQuestion,
     SetupQuestionSelect,
@@ -80,7 +80,7 @@ def prompt_question(question: SetupQuestion, answers: Dict[str, str]) -> Dict[st
 
 def run_setup():
     config_path = get_config_path()
-    answers = dotenv_values(config_path)  # load in current values and then override as necessary
+    answers = read_config_file(config_path)  # load in current values and then override as necessary
     for question in setup_questions:
         answers.update(prompt_question(question, answers))
 

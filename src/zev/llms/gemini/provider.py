@@ -48,7 +48,7 @@ class GeminiProvider(InferenceProvider):
         self.model = config.gemini_model or GEMINI_DEFAULT_MODEL
         self.api_url = f"{GEMINI_BASE_URL}/v1beta/models/{self.model}:generateContent?key={config.gemini_api_key}"
 
-    def get_options(self, prompt: str, context: str) -> None:
+    def get_options(self, prompt: str, context: str) -> OptionsResponse | None:
         assembled_prompt = PROMPT.format(prompt=prompt, context=context)
         headers = {"Content-Type": "application/json"}
         body = json.dumps(
@@ -64,7 +64,7 @@ class GeminiProvider(InferenceProvider):
                 data = json.loads(response.read().decode())
                 text_output = data["candidates"][0]["content"]["parts"][0]["text"]
                 parsed_json = json.loads(text_output)
-                return OptionsResponse(**parsed_json)
+                return OptionsResponse.from_dict(parsed_json)
         except urllib.error.HTTPError as e:
             try:
                 error_data = json.loads(e.read().decode())

@@ -1,16 +1,26 @@
+import json
+from dataclasses import dataclass
 from typing import Optional
 
 import questionary
-from pydantic import BaseModel
 
 from zev.command_selector import show_options
 from zev.llms.types import OptionsResponse
 from zev.paths import get_history_path
 
 
-class CommandHistoryEntry(BaseModel):
+@dataclass
+class CommandHistoryEntry:
     query: str
     response: OptionsResponse
+
+    @classmethod
+    def from_json(cls, line: str) -> "CommandHistoryEntry":
+        data = json.loads(line)
+        return cls(query=data["query"], response=OptionsResponse.from_dict(data["response"]))
+
+    def to_json(self) -> str:
+        return json.dumps({"query": self.query, "response": self.response.to_dict()})
 
 
 class CommandHistory:
@@ -26,7 +36,14 @@ class CommandHistory:
 
     def get_history(self) -> list[CommandHistoryEntry]:
         with open(self.path, "r", encoding=self.encoding) as f:
-            entries = [CommandHistoryEntry.model_validate_json(line) for line in f if line.strip()]
+            entries = []
+            for line in f:
+                if not line.strip():
+                    continue
+                try:
+                    entries.append(CommandHistoryEntry.from_json(line))
+                except (ValueError, KeyError, TypeError):
+                    continue  # skip corrupt lines rather than failing the whole history
 
         if not entries:
             return None
@@ -35,7 +52,7 @@ class CommandHistory:
 
     def _write_to_history_file(self, new_entry: CommandHistoryEntry) -> None:
         with open(self.path, "a", encoding=self.encoding) as f:
-            f.write(new_entry.model_dump_json() + "\n")
+            f.write(new_entry.to_json() + "\n")
 
         # If we've exceeded max entries, trim the file
         with open(self.path, "r", encoding=self.encoding) as f:
